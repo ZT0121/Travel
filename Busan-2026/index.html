@@ -1,0 +1,1085 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#f3f1ee" />
+  <title>2026 最帥男團 IN BUSAN｜行程＋匯率＋記帳</title>
+  <style>
+    :root{
+      --bg:#f3f1ee;         /* 莫蘭迪米白 */
+      --card:#ffffffcc;
+      --ink:#1f2937;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --brand:#6b7280;      /* 灰藍 */
+      --brand2:#8b7b6b;     /* 灰棕 */
+      --ok:#0f766e;
+      --warn:#b45309;
+      --bad:#b91c1c;
+      --shadow: 0 10px 30px rgba(31,41,55,.08);
+      --radius: 18px;
+      --radius2: 14px;
+      --safeB: env(safe-area-inset-bottom, 0px);
+      --safeT: env(safe-area-inset-top, 0px);
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: system-ui, -apple-system, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--sans);
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 600px at 10% -10%, rgba(107,114,128,.18), transparent 60%),
+        radial-gradient(900px 500px at 90% 0%, rgba(139,123,107,.16), transparent 55%),
+        var(--bg);
+      padding-bottom: calc(84px + var(--safeB));
+    }
+    header{
+      position:sticky; top:0; z-index:30;
+      background: linear-gradient(to bottom, rgba(243,241,238,.96), rgba(243,241,238,.72));
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--line);
+      padding: calc(14px + var(--safeT)) 16px 12px;
+    }
+    .title{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+      max-width:1040px; margin:0 auto;
+    }
+    .title h1{
+      margin:0;
+      font-size: 18px;
+      letter-spacing:.2px;
+      line-height:1.25;
+    }
+    .title .sub{
+      margin-top:6px;
+      font-size: 12px;
+      color:var(--muted);
+      line-height:1.4;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:rgba(255,255,255,.75);
+      box-shadow: 0 6px 16px rgba(31,41,55,.06);
+      white-space:nowrap;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .pill b{color:var(--ink); font-weight:700}
+    main{max-width:1040px; margin:0 auto; padding:16px}
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+    }
+    @media (min-width: 920px){
+      .grid{grid-template-columns: 1.2fr .8fr;}
+      .grid .full{grid-column: 1 / -1;}
+    }
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:14px 14px 10px;
+      border-bottom:1px solid var(--line);
+      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+    }
+    .card .hd h2{
+      margin:0;
+      font-size:15px;
+      letter-spacing:.2px;
+    }
+    .card .hd .hint{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.4;
+      text-align:right;
+      white-space:nowrap;
+    }
+    .card .bd{padding:14px}
+    .tabs{
+      position:fixed; left:0; right:0; bottom:0;
+      z-index:40;
+      padding:10px 12px calc(10px + var(--safeB));
+      background: linear-gradient(to top, rgba(243,241,238,.98), rgba(243,241,238,.70));
+      backdrop-filter: blur(10px);
+      border-top:1px solid var(--line);
+    }
+    .tabbar{
+      max-width:1040px; margin:0 auto;
+      display:grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap:10px;
+    }
+    .tabbtn{
+      appearance:none; border:1px solid var(--line);
+      background: rgba(255,255,255,.72);
+      border-radius: 999px;
+      padding:10px 10px;
+      font-size:13px;
+      color:var(--muted);
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      cursor:pointer;
+      box-shadow: 0 8px 20px rgba(31,41,55,.07);
+    }
+    .tabbtn.active{
+      border-color: rgba(107,114,128,.35);
+      background: #fff;
+      color: var(--ink);
+      font-weight:700;
+    }
+    .row{display:flex; gap:10px; flex-wrap:wrap}
+    .field{
+      flex:1 1 160px;
+      display:flex; flex-direction:column; gap:6px;
+      min-width: 140px;
+    }
+    label{font-size:12px; color:var(--muted)}
+    input, select, textarea{
+      width:100%;
+      padding:10px 10px;
+      border:1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,.9);
+      font-family: var(--sans);
+      font-size:14px;
+      outline:none;
+    }
+    textarea{min-height:44px; resize:vertical}
+    input:focus, select:focus, textarea:focus{
+      border-color: rgba(107,114,128,.55);
+      box-shadow: 0 0 0 4px rgba(107,114,128,.12);
+    }
+    .btn{
+      appearance:none;
+      border:1px solid rgba(107,114,128,.35);
+      background:#fff;
+      color:var(--ink);
+      border-radius: 14px;
+      padding:10px 12px;
+      font-size:13px;
+      cursor:pointer;
+      box-shadow: 0 10px 22px rgba(31,41,55,.08);
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      user-select:none;
+      text-decoration:none;
+    }
+    .btn.secondary{
+      background: rgba(255,255,255,.65);
+      color:var(--muted);
+      border-color: var(--line);
+      box-shadow:none;
+    }
+    .btn.danger{
+      border-color: rgba(185,28,28,.25);
+      color: var(--bad);
+    }
+    .btn.ok{
+      border-color: rgba(15,118,110,.25);
+      color: var(--ok);
+    }
+    .badge{
+      display:inline-flex; align-items:center; gap:6px;
+      font-size:12px;
+      padding:6px 10px;
+      border-radius: 999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.7);
+      color: var(--muted);
+    }
+    .mono{font-family:var(--mono)}
+    .sep{height:1px; background:var(--line); margin:12px 0}
+    .small{font-size:12px; color:var(--muted); line-height:1.5}
+    .kpi{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    .kpi .box{
+      padding:12px;
+      border:1px solid var(--line);
+      border-radius: var(--radius2);
+      background: rgba(255,255,255,.72);
+    }
+    .kpi .box .t{font-size:12px; color:var(--muted)}
+    .kpi .box .v{margin-top:6px; font-size:16px; font-weight:800; letter-spacing:.2px}
+    table{
+      width:100%;
+      border-collapse: separate;
+      border-spacing:0;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius: var(--radius2);
+      background:#fff;
+    }
+    th, td{
+      padding:10px 10px;
+      border-bottom:1px solid var(--line);
+      font-size:13px;
+      vertical-align:top;
+    }
+    th{
+      background: rgba(243,241,238,.7);
+      color: var(--muted);
+      font-weight:700;
+      text-align:left;
+    }
+    tr:last-child td{border-bottom:none}
+    .tableWrap{overflow:auto}
+    .hide{display:none !important}
+    details{
+      border:1px solid var(--line);
+      border-radius: var(--radius2);
+      background: rgba(255,255,255,.75);
+      overflow:hidden;
+    }
+    summary{
+      list-style:none;
+      cursor:pointer;
+      padding:12px 12px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      font-weight:800;
+    }
+    summary::-webkit-details-marker{display:none}
+    .sumhint{font-size:12px; color:var(--muted); font-weight:600}
+    .pad{padding:12px}
+    .toast{
+      position:fixed; left:50%; transform:translateX(-50%);
+      bottom: calc(96px + var(--safeB));
+      background: rgba(17,24,39,.92);
+      color:#fff;
+      padding:10px 12px;
+      border-radius: 999px;
+      font-size:13px;
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .18s ease, transform .18s ease;
+      z-index:60;
+    }
+    .toast.show{opacity:1; transform:translateX(-50%) translateY(-4px);}
+    .right{display:flex; gap:8px; align-items:center; justify-content:flex-end; flex-wrap:wrap}
+
+    /* 記帳：金額欄的雙行顯示 */
+    .amtMain{font-weight:800}
+    .amtSub{margin-top:2px; font-size:12px; color:var(--muted)}
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="title">
+    <div>
+      <h1>2026 最帥男團 IN BUSAN</h1>
+      <div class="sub">
+        🏨 西面 Hound Hotel｜📍 10, Bujeon-ro 20beon-gil, Busanjin-gu, Busan, Korea
+      </div>
+    </div>
+    <div class="pill">
+      <span>匯率</span>
+      <b id="rateBadge">—</b>
+      <span class="mono">TWD / KRW</span>
+    </div>
+  </div>
+</header>
+
+<main>
+<!-- 行程 -->
+<section id="view-itin" class="grid">
+  <div class="card full">
+    <div class="hd">
+      <h2>2026 最帥男團 IN BUSAN</h2>
+      <div class="hint"></div>
+    </div>
+    <div class="bd">
+      <div class="row" style="align-items:center; justify-content:space-between;">
+        <div class="row" style="gap:8px">
+          <span class="badge">🏨 西面 Hound Hotel</span>
+          <span class="badge">📍 10, Bujeon-ro 20beon-gil, Busanjin-gu, Busan, Korea</span>
+        </div>
+        <div class="right">
+          <a class="btn secondary" href="https://hub.hotelstory.com/aG90ZWxzdG9yeQ/rooms?v_Use=MTAwMjEyNQ" target="_blank" rel="noopener">🏨 飯店資訊</a>
+          <button class="btn secondary" id="btnExportAll">⬇️ 匯出資料</button>
+          <label class="btn secondary" for="fileImportAll" style="cursor:pointer;">⬆️ 匯入資料</label>
+          <input id="fileImportAll" type="file" accept="application/json" class="hide"/>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card full">
+    <div class="hd">
+      <h2>🗓️ 5天4夜 行程表</h2>
+      <div class="hint">—</div>
+    </div>
+
+    <div class="bd">
+      <details open>
+        <summary>
+          Day 1｜✈️ 台灣 → 釜山 → 西面
+          <span class="sumhint">BX794 13:25 → 17:00</span>
+        </summary>
+        <div class="pad">
+          <div class="tableWrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:140px">時間</th>
+                  <th style="width:260px">行程</th>
+                  <th style="width:120px">交通</th>
+                  <th>備註</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="mono">09:30–10:00</td><td>🏠 家裡 → 桃園機場</td><td>🚕</td><td>—</td></tr>
+                <tr><td class="mono">10:30–10:45</td><td>🛬 抵達機場</td><td>—</td><td>—</td></tr>
+                <tr><td class="mono">10:45–11:30</td><td>🧳 報到＋托運</td><td>—</td><td>—</td></tr>
+                <tr><td class="mono">11:30–12:30</td><td>🛂 出境＋🍴 用餐</td><td>🚶</td><td>—</td></tr>
+                <tr><td class="mono">13:25–17:00</td><td>✈️ 桃園 → 釜山（BX794）</td><td>✈️</td><td>—</td></tr>
+                <tr><td class="mono">17:00–18:30</td><td>🛃 入境＋領行李</td><td>🚶</td><td>—</td></tr>
+                <tr><td class="mono">18:30–19:30</td><td>🚌 機場 → 西面站（樂天百貨）</td><td>🚌</td><td>—</td></tr>
+                <tr><td class="mono">19:30–19:45</td><td>🚶 西面站（樂天百貨） → 飯店</td><td>🚶</td><td>—</td></tr>
+                <tr><td class="mono">19:45–20:45</td><td>🍽️ 晚餐：83獬豸</td><td>🚶</td><td>—</td></tr>
+                <tr><td class="mono">21:00</td><td>🛏️ 回飯店</td><td>—</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <div style="height:10px"></div>
+
+      <details>
+        <summary>
+          Day 2｜📍 南浦
+          <span class="sumhint">地鐵 1 號線</span>
+        </summary>
+        <div class="pad">
+          <div class="tableWrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:140px">時間</th>
+                  <th style="width:260px">行程</th>
+                  <th style="width:120px">交通</th>
+                  <th>備註</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="mono">08:30–09:30</td><td>🌅 起床＋早餐</td><td>🚶</td><td>—</td></tr>
+                <tr><td class="mono">10:00–10:30</td><td>🚇 西面 → 南浦</td><td>🚇</td><td>—</td></tr>
+                <tr><td class="mono">10:30–11:00</td><td>🎬 BIFF 廣場</td><td>🚶</td><td>—</td></tr>
+                <tr><td class="mono">11:00–11:30</td><td>🛍️ 國際市場</td><td>🚶</td><td>—</td></tr>
+                <tr><td class="mono">11:30–12:30</td><td>🍲 午餐：松亭三代豬肉湯飯</td><td>🚶</td><td>—</td></tr>
+                <tr><td class="mono">12:30–14:00</td><td>🚶 南浦周邊</td><td>🚶</td><td>—</td></tr>
+                <tr><td class="mono">14:00–15:00</td><td>☕ 咖啡店</td><td>🚶</td><td>—</td></tr>
+                <tr><td class="mono">15:30–16:00</td><td>🚇 南浦 → 西面</td><td>🚇</td><td>—</td></tr>
+                <tr><td class="mono">晚上</td><td>🍴 西面用餐</td><td>🚶</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <div style="height:10px"></div>
+
+      <details>
+        <summary>
+          Day 3｜🏬 新世界百貨
+          <span class="sumhint">Centum City</span>
+        </summary>
+        <div class="pad">
+          <div class="tableWrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:140px">時間</th>
+                  <th style="width:260px">行程</th>
+                  <th style="width:120px">交通</th>
+                  <th>備註</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="mono">08:30–09:30</td><td>🌅 起床＋整理</td><td>—</td><td>—</td></tr>
+                <tr><td class="mono">09:30–10:00</td><td>🥪 早餐／早午餐：Eggdrop</td><td>🚶</td><td>—</td></tr>
+                <tr><td class="mono">10:10–10:40</td><td>🚇 西面 → Centum City</td><td>🚇</td><td>—</td></tr>
+                <tr><td class="mono">11:00–13:00</td><td>🏬 新世界百貨＋🍔 午餐：Shake Shack</td><td>🚶</td><td>—</td></tr>
+                <tr><td class="mono">13:00–15:00</td><td>🏬 繼續逛逛</td><td>🚶</td><td>—</td></tr>
+                <tr><td class="mono">14:30–15:00</td><td>🚇 Centum City → 西面</td><td>🚇</td><td>—</td></tr>
+                <tr><td class="mono">15:00–17:00</td><td>🛏️ 飯店</td><td>—</td><td>—</td></tr>
+                <tr><td class="mono">17:30–18:30</td><td>🍽️ 晚餐</td><td>🚶</td><td>—</td></tr>
+                <tr><td class="mono">晚上</td><td>🛒 地下街／便利商店</td><td>🚶</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <div style="height:10px"></div>
+
+      <details>
+        <summary>
+          Day 4｜🚝 膠囊列車
+          <span class="sumhint">尾浦 → 青沙浦</span>
+        </summary>
+        <div class="pad">
+          <div class="tableWrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:140px">時間</th>
+                  <th style="width:260px">行程</th>
+                  <th style="width:120px">交通</th>
+                  <th>備註</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="mono">08:30–09:30</td><td>🌅 起床＋整理</td><td>—</td><td>—</td></tr>
+                <tr><td class="mono">09:30–10:00</td><td>☕ 早餐</td><td>🚶</td><td>—</td></tr>
+                <tr><td class="mono">10:15–11:00</td><td>🚇 西面 → 海雲台</td><td>🚇</td><td>—</td></tr>
+                <tr><td class="mono">11:00–11:20</td><td>🚕 海雲台 → 尾浦</td><td>🚕</td><td>—</td></tr>
+                <tr><td class="mono">11:30–12:30</td><td>🚝 膠囊列車（尾浦 → 青沙浦）</td><td>🚝</td><td>⚠️ 建議提前訂票</td></tr>
+                <tr><td class="mono">12:30–13:30</td><td>🍽️ 午餐</td><td>🚶</td><td>—</td></tr>
+                <tr><td class="mono">13:30–14:00</td><td>📸 周邊</td><td>🚶</td><td>—</td></tr>
+                <tr><td class="mono">14:00–14:30</td><td>🚕 青沙浦 → 海雲台</td><td>🚕</td><td>—</td></tr>
+                <tr><td class="mono">14:30–15:15</td><td>🚇 海雲台 → 西面</td><td>🚇</td><td>—</td></tr>
+                <tr><td class="mono">15:15–17:00</td><td>🛏️ 飯店</td><td>—</td><td>—</td></tr>
+                <tr><td class="mono">晚上</td><td>🍴 西面晚餐</td><td>🚶</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+
+      <div style="height:10px"></div>
+
+      <details>
+        <summary>
+          Day 5｜✈️ 釜山 → 台灣
+          <span class="sumhint">BX791 15:00 → 16:40</span>
+        </summary>
+        <div class="pad">
+          <div class="tableWrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:140px">時間</th>
+                  <th style="width:260px">行程</th>
+                  <th style="width:120px">交通</th>
+                  <th>備註</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="mono">08:30–09:30</td><td>🌅 起床＋整理</td><td>—</td><td>—</td></tr>
+                <tr><td class="mono">09:30–10:00</td><td>🧳 退房</td><td>—</td><td>—</td></tr>
+                <tr><td class="mono">10:30–11:30</td><td>🚌 西面 → 機場</td><td>🚌</td><td>—</td></tr>
+                <tr><td class="mono">11:30–14:30</td><td>🛂 出境＋🍴 用餐</td><td>—</td><td>—</td></tr>
+                <tr><td class="mono">15:00–16:40</td><td>✈️ 釜山 → 桃園（BX791）</td><td>✈️</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+  <!-- 匯率 -->
+  <section id="view-fx" class="grid hide">
+    <div class="card">
+      <div class="hd">
+        <h2>💱 匯率換算</h2>
+        <div class="hint" id="fxMeta">離線可用｜可抓最新</div>
+      </div>
+      <div class="bd">
+        <div class="row">
+          <div class="field">
+            <label>KRW → TWD 匯率（1 KRW = ? TWD）</label>
+            <input id="rateInput" inputmode="decimal" placeholder="例如 0.024" />
+          </div>
+          <div class="field" style="flex:0 0 160px">
+            <label>&nbsp;</label>
+            <button class="btn ok" id="btnFetchRate">⚡ 抓最新匯率</button>
+          </div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="row">
+          <div class="field">
+            <label>我有多少 KRW</label>
+            <input id="krwAmt" inputmode="decimal" placeholder="例如 10000" />
+          </div>
+          <div class="field">
+            <label>換算成 TWD</label>
+            <input id="twdOut" readonly />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label>我有多少 TWD</label>
+            <input id="twdAmt" inputmode="decimal" placeholder="例如 1000" />
+          </div>
+          <div class="field">
+            <label>換算成 KRW</label>
+            <input id="krwOut" readonly />
+          </div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="small">
+          匯率來源：jsDelivr 的 <span class="mono">@fawazahmed0/currency-api</span>（無需金鑰）。無網路時仍可手動輸入匯率。
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="hd">
+        <h2>🧠 小抄</h2>
+        <div class="hint">快速估算</div>
+      </div>
+      <div class="bd">
+        <div class="kpi">
+          <div class="box">
+            <div class="t">KRW → TWD</div>
+            <div class="v">KRW × 匯率</div>
+          </div>
+          <div class="box">
+            <div class="t">TWD → KRW</div>
+            <div class="v">TWD ÷ 匯率</div>
+          </div>
+        </div>
+        <div class="sep"></div>
+        <div class="small">
+          建議到韓國第一天更新一次匯率；記帳用同一個匯率，回來結算會比較一致。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 記帳 -->
+  <section id="view-exp" class="grid hide">
+    <div class="card full">
+      <div class="hd">
+        <h2>🧾 旅費記帳</h2>
+        <div class="hint" id="expMeta">自動保存｜可匯出同步</div>
+      </div>
+      <div class="bd">
+        <div class="row">
+          <div class="field" style="flex:0 0 170px">
+            <label>日期</label>
+            <input id="expDate" type="date"/>
+          </div>
+          <div class="field" style="flex:0 0 150px">
+            <label>幣別</label>
+            <select id="expCur">
+              <option value="KRW">KRW（韓元）</option>
+              <option value="TWD">TWD（台幣）</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>金額</label>
+            <input id="expAmt" inputmode="decimal" placeholder="例如 12000" />
+          </div>
+          <div class="field" style="flex:0 0 180px">
+            <label>分類</label>
+            <select id="expCat">
+              <option>交通</option>
+              <option>餐飲</option>
+              <option>零食</option>
+              <option>門票</option>
+              <option>購物</option>
+              <option>住宿</option>
+              <option>其他</option>
+            </select>
+          </div>
+          <div class="field" style="flex:0 0 190px">
+            <label>付款方式</label>
+            <select id="expPay">
+              <option>現金</option>
+              <option>信用卡</option>
+              <option>T-money / 交通卡</option>
+              <option>其他</option>
+            </select>
+          </div>
+          <div class="field" style="flex:1 1 260px">
+            <label>備註</label>
+            <input id="expMemo" placeholder="例如：豬肉湯飯、便利商店、計程車…" />
+          </div>
+
+          <div class="field" style="flex:0 0 160px">
+            <label>&nbsp;</label>
+            <button class="btn ok" id="btnAddExp">➕ 新增</button>
+          </div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="row" style="align-items:center; justify-content:space-between;">
+          <div class="row" style="gap:8px">
+            <span class="badge">自動換算：<b id="rateInline">—</b> TWD/KRW</span>
+            <span class="badge">資料筆數：<b id="expCount">0</b></span>
+          </div>
+          <div class="right">
+            <input id="searchExp" placeholder="搜尋：餐廳/交通/分類/備註…" style="width:min(360px, 70vw)"/>
+            <button class="btn secondary" id="btnExportExp">⬇️ 匯出記帳</button>
+            <label class="btn secondary" for="fileImportExp" style="cursor:pointer;">⬆️ 匯入記帳</label>
+            <input id="fileImportExp" type="file" accept="application/json" class="hide"/>
+            <button class="btn danger" id="btnClearExp">🧨 清空記帳</button>
+          </div>
+        </div>
+
+        <div style="height:10px"></div>
+
+        <div class="kpi">
+          <div class="box">
+            <div class="t">總花費（KRW）</div>
+            <div class="v mono" id="sumKrw">0</div>
+          </div>
+          <div class="box">
+            <div class="t">總花費（TWD，依匯率換算）</div>
+            <div class="v mono" id="sumTwd">0</div>
+          </div>
+        </div>
+
+        <div style="height:10px"></div>
+
+        <div class="tableWrap">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:110px">日期</th>
+                <th style="width:90px">幣別</th>
+                <th style="width:170px">金額</th>
+                <th style="width:120px">分類</th>
+                <th style="width:160px">付款</th>
+                <th>備註</th>
+                <th style="width:80px">刪除</th>
+              </tr>
+            </thead>
+            <tbody id="expTbody"></tbody>
+          </table>
+        </div>
+
+        <div class="sep"></div>
+        <div class="small">
+          記帳會依目前匯率自動顯示換算（每筆＋總額）。
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="tabs">
+  <div class="tabbar">
+    <button class="tabbtn active" data-tab="itin">🗓️ 行程</button>
+    <button class="tabbtn" data-tab="fx">💱 匯率</button>
+    <button class="tabbtn" data-tab="exp">🧾 記帳</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // =========================
+  // Storage
+  // =========================
+  const STORE_KEY = location.pathname + "_ITIN_FX_EXP_v2";
+  const defaultState = {
+    v: 2,
+    rateTwdPerKrw: "",          // string for UI
+    rateUpdatedAt: "",          // ISO
+    expenses: []                // {id, date, cur, amt, cat, pay, memo}
+  };
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORE_KEY);
+      if(!raw) return structuredClone(defaultState);
+      const obj = JSON.parse(raw);
+      return { ...structuredClone(defaultState), ...obj };
+    }catch(e){
+      return structuredClone(defaultState);
+    }
+  }
+  function saveState(){
+    localStorage.setItem(STORE_KEY, JSON.stringify(state));
+  }
+
+  let state = loadState();
+
+  // =========================
+  // UI helpers
+  // =========================
+  const $ = (sel)=>document.querySelector(sel);
+  const toastEl = $("#toast");
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    setTimeout(()=>toastEl.classList.remove("show"), 1600);
+  }
+  function n(v){
+    const x = Number(String(v).replace(/,/g,"").trim());
+    return Number.isFinite(x) ? x : 0;
+  }
+  function fmtInt(x){
+    const v = Math.round(x);
+    return v.toLocaleString("en-US");
+  }
+  function fmt2(x){
+    const v = Math.round(x*100)/100;
+    return v.toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+  function todayStr(){
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth()+1).padStart(2,"0");
+    const dd = String(d.getDate()).padStart(2,"0");
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+  // =========================
+  // Tabs
+  // =========================
+  const views = {
+    itin: $("#view-itin"),
+    fx: $("#view-fx"),
+    exp: $("#view-exp")
+  };
+  document.querySelectorAll(".tabbtn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      document.querySelectorAll(".tabbtn").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      const t = btn.dataset.tab;
+      Object.entries(views).forEach(([k,el])=>{
+        el.classList.toggle("hide", k!==t);
+      });
+    });
+  });
+
+  // =========================
+  // Rate
+  // =========================
+  const rateBadge = $("#rateBadge");
+  const rateInput = $("#rateInput");
+  const rateInline = $("#rateInline");
+  const fxMeta = $("#fxMeta");
+  const rateUrls = [
+    "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/krw/twd.json",
+    "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/krw/twd.json"
+  ];
+
+  function getRateNum(){
+    const r = n(state.rateTwdPerKrw);
+    return r>0 ? r : 0;
+  }
+  function syncRateUI(){
+    const r = getRateNum();
+    rateBadge.textContent = r ? String(r) : "—";
+    rateInline.textContent = r ? String(r) : "—";
+    rateInput.value = state.rateTwdPerKrw || "";
+    if(state.rateUpdatedAt){
+      const d = new Date(state.rateUpdatedAt);
+      fxMeta.textContent = `上次更新：${d.toLocaleString()}｜離線可用｜可抓最新`;
+    }else{
+      fxMeta.textContent = "離線可用｜可抓最新";
+    }
+  }
+
+  rateInput.addEventListener("input", ()=>{
+    state.rateTwdPerKrw = rateInput.value.trim();
+    state.rateUpdatedAt = state.rateUpdatedAt || new Date().toISOString();
+    saveState();
+    syncRateUI();
+    computeFX();
+    renderExpenses();
+  });
+
+  async function fetchRate(){
+    for(const url of rateUrls){
+      try{
+        const resp = await fetch(url, {cache:"no-store"});
+        if(!resp.ok) throw new Error("HTTP " + resp.status);
+        const data = await resp.json();
+        const r = data && data.krw && data.krw.twd ? Number(data.krw.twd) : 0;
+        if(!Number.isFinite(r) || r<=0) throw new Error("rate missing");
+        state.rateTwdPerKrw = String(r);
+        state.rateUpdatedAt = new Date().toISOString();
+        saveState();
+        syncRateUI();
+        computeFX();
+        renderExpenses();
+        toast("已更新匯率");
+        return;
+      }catch(e){
+        // try next
+      }
+    }
+    toast("抓匯率失敗（可能沒網路），可手動輸入");
+  }
+
+  $("#btnFetchRate").addEventListener("click", fetchRate);
+
+  // =========================
+  // FX calculator
+  // =========================
+  const krwAmt = $("#krwAmt");
+  const twdAmt = $("#twdAmt");
+  const twdOut = $("#twdOut");
+  const krwOut = $("#krwOut");
+
+  function computeFX(){
+    const r = getRateNum();
+    const k = n(krwAmt.value);
+    const t = n(twdAmt.value);
+
+    twdOut.value = (r && k) ? fmt2(k * r) : "";
+    krwOut.value = (r && t) ? fmt2(t / r) : "";
+  }
+  krwAmt.addEventListener("input", computeFX);
+  twdAmt.addEventListener("input", computeFX);
+
+  // =========================
+  // Expenses
+  // =========================
+  const expDate = $("#expDate");
+  const expCur = $("#expCur");
+  const expAmt = $("#expAmt");
+  const expCat = $("#expCat");
+  const expPay = $("#expPay");
+  const expMemo = $("#expMemo");
+  const expTbody = $("#expTbody");
+  const expCount = $("#expCount");
+  const sumKrw = $("#sumKrw");
+  const sumTwd = $("#sumTwd");
+  const searchExp = $("#searchExp");
+
+  function makeId(){
+    return Math.random().toString(16).slice(2) + "-" + Date.now().toString(16);
+  }
+
+  function addExpense(){
+    const date = expDate.value || todayStr();
+    const cur = expCur.value;
+    const amt = n(expAmt.value);
+    if(!amt){
+      toast("請輸入金額");
+      return;
+    }
+    const item = {
+      id: makeId(),
+      date,
+      cur,
+      amt: String(amt),
+      cat: expCat.value,
+      pay: expPay.value,
+      memo: (expMemo.value || "").trim()
+    };
+    state.expenses.unshift(item);
+    saveState();
+    expAmt.value = "";
+    expMemo.value = "";
+    renderExpenses();
+    toast("已新增");
+  }
+
+  $("#btnAddExp").addEventListener("click", addExpense);
+
+  function expenseMatches(item, q){
+    if(!q) return true;
+    const hay = [
+      item.date, item.cur, item.amt, item.cat, item.pay, item.memo
+    ].join(" ").toLowerCase();
+    return hay.includes(q.toLowerCase());
+  }
+
+  function computeTotals(items){
+    const r = getRateNum();
+    let totalKrw = 0;
+    let totalTwd = 0;
+
+    for(const it of items){
+      const a = n(it.amt);
+      if(it.cur === "KRW"){
+        totalKrw += a;
+        if(r) totalTwd += a * r;
+      }else{
+        totalTwd += a;
+        if(r) totalKrw += (a / r);
+      }
+    }
+    return { totalKrw, totalTwd };
+  }
+
+  function delExpense(id){
+    state.expenses = state.expenses.filter(x=>x.id!==id);
+    saveState();
+    renderExpenses();
+    toast("已刪除");
+  }
+
+  function renderExpenses(){
+    const q = (searchExp.value || "").trim();
+    const items = state.expenses.filter(it=>expenseMatches(it, q));
+    const r = getRateNum();
+
+    expCount.textContent = String(items.length);
+
+    const totals = computeTotals(items);
+    sumKrw.textContent = fmtInt(totals.totalKrw) + " KRW";
+    sumTwd.textContent = (r ? fmtInt(totals.totalTwd) : "—") + " TWD";
+
+    expTbody.innerHTML = "";
+    for(const it of items){
+      const tr = document.createElement("tr");
+
+      const tdDate = document.createElement("td");
+      tdDate.className = "mono";
+      tdDate.textContent = it.date;
+
+      const tdCur = document.createElement("td");
+      tdCur.textContent = it.cur;
+
+      const tdAmt = document.createElement("td");
+      const a = n(it.amt);
+
+      // 主金額 + 另一側換算（有匯率才顯示）
+      let sub = "";
+      if(r){
+        if(it.cur === "KRW"){
+          sub = `≈ ${fmtInt(a * r)} TWD`;
+        }else{
+          sub = `≈ ${fmtInt(a / r)} KRW`;
+        }
+      }
+      tdAmt.innerHTML = `
+        <div class="mono amtMain">${fmtInt(a)} ${it.cur}</div>
+        <div class="mono amtSub">${sub || ""}</div>
+      `;
+
+      const tdCat = document.createElement("td");
+      tdCat.textContent = it.cat;
+
+      const tdPay = document.createElement("td");
+      tdPay.textContent = it.pay;
+
+      const tdMemo = document.createElement("td");
+      tdMemo.textContent = it.memo || "—";
+
+      const tdDel = document.createElement("td");
+      const b = document.createElement("button");
+      b.className = "btn secondary";
+      b.textContent = "刪";
+      b.addEventListener("click", ()=>delExpense(it.id));
+      tdDel.appendChild(b);
+
+      tr.append(tdDate, tdCur, tdAmt, tdCat, tdPay, tdMemo, tdDel);
+      expTbody.appendChild(tr);
+    }
+
+    syncRateUI();
+  }
+
+  searchExp.addEventListener("input", renderExpenses);
+
+  $("#btnClearExp").addEventListener("click", ()=>{
+    if(!confirm("確定要清空所有記帳？（不可復原）")) return;
+    state.expenses = [];
+    saveState();
+    renderExpenses();
+    toast("已清空");
+  });
+
+  function downloadJson(filename, obj){
+    const blob = new Blob([JSON.stringify(obj, null, 2)], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(()=>{
+      URL.revokeObjectURL(a.href);
+      a.remove();
+    }, 0);
+  }
+
+  function exportAll(){
+    downloadJson("BUSAN-2026-行程匯率記帳.json", state);
+    toast("已匯出");
+  }
+  function exportExpenses(){
+    downloadJson("BUSAN-2026-記帳.json", {
+      v: state.v,
+      rateTwdPerKrw: state.rateTwdPerKrw,
+      rateUpdatedAt: state.rateUpdatedAt,
+      expenses: state.expenses
+    });
+    toast("已匯出");
+  }
+
+  $("#btnExportAll").addEventListener("click", exportAll);
+  $("#btnExportExp").addEventListener("click", exportExpenses);
+
+  function importJsonFile(file, mode){
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      try{
+        const obj = JSON.parse(reader.result);
+        if(mode==="all"){
+          if(!obj || !("expenses" in obj)) throw new Error("bad");
+          state = { ...structuredClone(defaultState), ...obj };
+        }else{
+          if(!obj || !Array.isArray(obj.expenses)) throw new Error("bad");
+          state.expenses = obj.expenses;
+          if(obj.rateTwdPerKrw) state.rateTwdPerKrw = obj.rateTwdPerKrw;
+          if(obj.rateUpdatedAt) state.rateUpdatedAt = obj.rateUpdatedAt;
+        }
+        saveState();
+        syncRateUI();
+        renderExpenses();
+        computeFX();
+        toast("已匯入");
+      }catch(e){
+        toast("匯入失敗：檔案格式不對");
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  $("#fileImportAll").addEventListener("change", (e)=>{
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    importJsonFile(f, "all");
+    e.target.value = "";
+  });
+  $("#fileImportExp").addEventListener("change", (e)=>{
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    importJsonFile(f, "exp");
+    e.target.value = "";
+  });
+
+  // =========================
+  // Init
+  // =========================
+  expDate.value = todayStr();
+  syncRateUI();
+  renderExpenses();
+  computeFX();
+
+  if(!state.rateTwdPerKrw){
+    setTimeout(()=>toast("先到「匯率」抓一次，記帳會自動換算"), 700);
+  }
+</script>
+</body>
+</html>
