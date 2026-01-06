@@ -775,9 +775,10 @@
   const rateInline = $("#rateInline");
   const fxMeta = $("#fxMeta");
   const rateUrls = [
-    "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/krw/twd.json",
-    "https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/krw/twd.json"
+    "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/krw.json",
+    "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/krw.min.json"
   ];
+
 
   function getRateNum(){
     const r = n(state.rateTwdPerKrw);
@@ -806,27 +807,34 @@
   });
 
   async function fetchRate(){
-    for(const url of rateUrls){
-      try{
-        const resp = await fetch(url, {cache:"no-store"});
-        if(!resp.ok) throw new Error("HTTP " + resp.status);
-        const data = await resp.json();
-        const r = data && data.krw && data.krw.twd ? Number(data.krw.twd) : 0;
-        if(!Number.isFinite(r) || r<=0) throw new Error("rate missing");
-        state.rateTwdPerKrw = String(r);
-        state.rateUpdatedAt = new Date().toISOString();
-        saveState();
-        syncRateUI();
-        computeFX();
-        renderExpenses();
-        toast("已更新匯率");
-        return;
-      }catch(e){
-        // try next
-      }
+  for (const url of rateUrls){
+    try{
+      const resp = await fetch(url, { cache: "no-store" });
+      if(!resp.ok) throw new Error("HTTP " + resp.status);
+
+      const data = await resp.json();
+      // krw.json 格式：{ date: "...", krw: { twd: 0.0xxx, ... } }
+      const r = Number(data?.krw?.twd);
+
+      if(!Number.isFinite(r) || r <= 0) throw new Error("rate missing");
+
+      state.rateTwdPerKrw = String(r);
+      state.rateUpdatedAt = new Date().toISOString();
+      saveState();
+
+      syncRateUI();
+      computeFX();
+      renderExpenses();
+
+      toast("已更新匯率");
+      return;
+    }catch(e){
+      // try next url
     }
-    toast("抓匯率失敗（可能沒網路），可手動輸入");
   }
+  toast("抓匯率失敗（可能沒網路），可手動輸入");
+}
+
 
   $("#btnFetchRate").addEventListener("click", fetchRate);
 
