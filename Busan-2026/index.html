@@ -304,7 +304,7 @@
 
       table.itinTable tbody tr{
         display:grid;
-        grid-template-columns: 112px minmax(0, 1fr) 64px;
+        grid-template-columns: 92px minmax(0, 1fr) 44px;
         grid-auto-rows: auto;
         gap:4px 6px;
         padding:10px 0; /* 由左右 padding 改成 0：跟外層 .pad 對齊 */
@@ -321,15 +321,28 @@
         grid-column:1;
         padding-right:4px;
         white-space:nowrap;
+        font-size:12px;
       }
       table.itinTable tbody td:nth-child(2){ grid-column:2; }
       /* 2:行程 盡量維持一行，避免被拆成兩行（太長就省略號） */
       table.itinTable tbody td:nth-child(2){
+        grid-column:2;
+        position: relative;
         white-space: nowrap;
         overflow: hidden;
-        text-overflow: ellipsis;
+        text-overflow: clip; /* 取消 ...，改用淡出遮罩 */
       }
-      table.itinTable tbody td:nth-child(3){ grid-column:3; text-align:right; }
+      table.itinTable tbody td:nth-child(2)::after{
+        content:"";
+        position:absolute;
+        top:0;
+        right:0;
+        width:32px;
+        height:100%;
+        pointer-events:none;
+        background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,1));
+      }
+      table.itinTable tbody td:nth-child(3){ grid-column:3; text-align:right; white-space:nowrap; font-size:12px; }
       /* 4:備註 變成下一行全寬 */
       table.itinTable tbody td:nth-child(4){
         grid-column: 1 / -1;
@@ -463,7 +476,7 @@
                   <tr><td class="mono">10:10–10:40</td><td>🚇 去 Centum City</td><td>🚇</td><td>地鐵 2 號線</td></tr>
                   <tr><td class="mono">10:40–11:00</td><td>🚶 抵達 Centum City</td><td>🚶</td><td></td></tr>
                   <tr><td class="mono">11:00–12:30</td><td>🐠 SEA LIFE 釜山水族館</td><td>🚶</td><td></td></tr>
-                  <tr><td class="mono">12:30–14:00</td><td>🏬 新世界百貨＋🍔 午餐：Shake Shack</td><td>🚶</td><td></td></tr>
+                  <tr><td class="mono">12:30–14:00</td><td>🏬 新世界百貨</td><td>🚶</td><td>🍔 Shake Shack</td></tr>
                   <tr><td class="mono">14:00–15:30</td><td>🍰 百貨內休息／甜點</td><td>🚶</td><td></td></tr>
                   <tr><td class="mono">15:30–16:10</td><td>🚇 回西面</td><td>🚇</td><td></td></tr>
                   <tr><td class="mono">16:10–17:30</td><td>🛏️ 飯店休息</td><td></td><td></td></tr>
