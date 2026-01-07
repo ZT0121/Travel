@@ -271,6 +271,56 @@
     /* 記帳：金額欄的雙行顯示 */
     .amtMain{font-weight:800}
     .amtSub{margin-top:2px; font-size:12px; color:var(--muted)}
+
+    /* ===== Mobile: Day summary 右側資訊獨立成一行（避免被切成兩段） ===== */
+    @media (max-width: 640px){
+      summary{
+        display:flex;
+        flex-wrap:wrap;
+        gap:6px 10px;
+      }
+      summary .sumhint{
+        flex: 0 0 100%;
+        text-align: right;
+        white-space: nowrap;
+        font-size: 12px;
+        color: var(--muted);
+      }
+    }
+
+    /* ===== Mobile: 行程表格改成「備註下一行全寬」 ===== */
+    @media (max-width: 640px){
+      table.itinTable{ table-layout: auto; }
+      table.itinTable thead{ display:none; }
+      table.itinTable tbody tr{
+        display:grid;
+        grid-template-columns: 112px 1fr 64px;
+        grid-auto-rows: auto;
+        gap:6px 10px;
+        padding:10px 10px;
+      }
+      table.itinTable tbody td{
+        border-bottom:none;
+        padding:0;
+      }
+      /* 1:時間 2:行程 3:交通 同一行 */
+      table.itinTable tbody td:nth-child(1){ grid-column:1; }
+      table.itinTable tbody td:nth-child(2){ grid-column:2; }
+      table.itinTable tbody td:nth-child(3){ grid-column:3; text-align:right; }
+      /* 4:備註 變成下一行全寬 */
+      table.itinTable tbody td:nth-child(4){
+        grid-column: 1 / -1;
+        margin-top:2px;
+        padding-top:6px;
+        border-top:1px dashed rgba(107,114,128,.25);
+        color: var(--muted);
+        font-size:12px;
+        line-height:1.45;
+        word-break: break-word;
+      }
+      /* 空備註就不佔高度 */
+      table.itinTable tbody td:nth-child(4):empty{ display:none; }
+    }
   </style>
 </head>
 
@@ -308,7 +358,7 @@
           </summary>
           <div class="pad">
             <div class="tableWrap">
-              <table>
+              <table class="itinTable">
                 <thead>
                   <tr>
                     <th style="width:140px">時間</th>
@@ -343,7 +393,7 @@
           </summary>
           <div class="pad">
             <div class="tableWrap">
-              <table>
+              <table class="itinTable">
                 <thead>
                   <tr>
                     <th style="width:140px">時間</th>
@@ -375,7 +425,7 @@
           </summary>
           <div class="pad">
             <div class="tableWrap">
-              <table>
+              <table class="itinTable">
                 <thead>
                   <tr>
                     <th style="width:140px">時間</th>
@@ -410,7 +460,7 @@
           </summary>
           <div class="pad">
             <div class="tableWrap">
-              <table>
+              <table class="itinTable">
                 <thead>
                   <tr>
                     <th style="width:140px">時間</th>
@@ -445,7 +495,7 @@
           </summary>
           <div class="pad">
             <div class="tableWrap">
-              <table>
+              <table class="itinTable">
                 <thead>
                   <tr>
                     <th style="width:140px">時間</th>
