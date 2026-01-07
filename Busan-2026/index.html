@@ -290,15 +290,28 @@
 
     /* ===== Mobile: 行程表格改成「備註下一行全寬」 ===== */
     @media (max-width: 640px){
-      table.itinTable{ table-layout: auto; }
+      /* 手機：把表格外框拿掉，內容就跟 summary 同寬，不會「展開變窄」 */
+      table.itinTable{
+        table-layout: auto;
+        border: none;
+        border-radius: 0;
+        background: transparent;
+      }
       table.itinTable thead{ display:none; }
+
+      /* tableWrap 在手機不用橫向捲動，避免內縮視覺 */
+      .tableWrap{ overflow: visible; }
+
       table.itinTable tbody tr{
         display:grid;
-        grid-template-columns: 112px 1fr 64px;
+        grid-template-columns: 112px minmax(0, 1fr) 64px;
         grid-auto-rows: auto;
         gap:6px 10px;
-        padding:10px 10px;
+        padding:10px 0; /* 由左右 padding 改成 0：跟外層 .pad 對齊 */
+        border-bottom: 1px solid rgba(107,114,128,.16);
       }
+      table.itinTable tbody tr:last-child{ border-bottom: none; }
+
       table.itinTable tbody td{
         border-bottom:none;
         padding:0;
@@ -306,13 +319,19 @@
       /* 1:時間 2:行程 3:交通 同一行 */
       table.itinTable tbody td:nth-child(1){ grid-column:1; }
       table.itinTable tbody td:nth-child(2){ grid-column:2; }
+      /* 2:行程 盡量維持一行，避免被拆成兩行（太長就省略號） */
+      table.itinTable tbody td:nth-child(2){
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
       table.itinTable tbody td:nth-child(3){ grid-column:3; text-align:right; }
       /* 4:備註 變成下一行全寬 */
       table.itinTable tbody td:nth-child(4){
         grid-column: 1 / -1;
         margin-top:2px;
         padding-top:6px;
-        border-top:1px dashed rgba(107,114,128,.25);
+        border-top:1px dashed rgba(107,114,128,.16);
         color: var(--muted);
         font-size:12px;
         line-height:1.45;
