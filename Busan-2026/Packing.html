@@ -37,6 +37,17 @@ button{
   padding:6px 12px;
   font-size:12px;
 }
+.back{
+  text-decoration:none;
+  color:var(--muted);
+  font-size:12px;
+  padding:4px 8px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:#fff;
+  white-space:nowrap;
+}
+  
 main{
   padding:16px;
   display:grid;
@@ -84,6 +95,7 @@ footer{
 <body>
 
 <header>
+  <a class="back" href="./">🔙 行程</a>
   <h1>✈️ 2026 Busan 行李清單</h1>
   <button onclick="resetAll()">全部重置</button>
 </header>
@@ -238,6 +250,7 @@ function resetAll(){
 
 </body>
 </html>
+
 
 
 
