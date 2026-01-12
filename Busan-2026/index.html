@@ -357,6 +357,20 @@
       /* 空備註就不佔高度 */
       table.itinTable tbody td:nth-child(4):empty{ display:none; }
     }
+
+      /* 行前準備：低調連結按鈕 */
+      .pretrip-link{
+        padding:6px 10px;
+        font-size:12px;
+        border-radius:999px;
+        box-shadow:none;
+        background: rgba(255,255,255,.55);
+      }
+      .pretrip-link:hover{
+        background: rgba(255,255,255,.75);
+      }
+
+    
   </style>
 </head>
 
@@ -381,28 +395,17 @@
   <!-- 行程 -->
   <section id="view-itin" class="grid">
      
-    <!-- 行前準備區：出發後可整段刪除 -->
-  <div class="card full">
-    <div class="hd">
-      <h2>行前準備</h2>
-      <div class="hint"></div>
-    </div>
-    <div class="bd">
-      <a class="btn secondary pretrip-link" href="./Packing.html">🧳行李清單</a>
-            /* 行前準備：低調連結按鈕 */
-      .pretrip-link{
-        padding:6px 10px;
-        font-size:12px;
-        border-radius:999px;
-        box-shadow:none;
-        background: rgba(255,255,255,.55);
-      }
-      .pretrip-link:hover{
-        background: rgba(255,255,255,.75);
-      }
-
-    </div>
+<!-- 行前準備區：出發後可整段刪除 -->
+<div class="card full">
+  <div class="hd">
+    <h2>行前準備</h2>
+    <div class="hint"></div>
   </div>
+  <div class="bd">
+    <a class="btn secondary pretrip-link" href="./Packing.html">🧳 行李清單</a>
+  </div>
+</div>
+
     
     
     <div class="card full">
