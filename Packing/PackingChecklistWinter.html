@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>✈️ 冬季出國行李清單</title>
+<style>
+:root{
+  --bg:#f3f1ee;
+  --card:#ffffff;
+  --ink:#1f2937;
+  --muted:#6b7280;
+  --line:#e5e7eb;
+  --radius:16px;
+  --shadow:0 8px 24px rgba(0,0,0,.06);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+}
+header{
+  position:sticky; top:0;
+  background:var(--bg);
+  padding:14px 16px;
+  display:flex; justify-content:space-between; align-items:center;
+  border-bottom:1px solid var(--line);
+}
+h1{font-size:18px;margin:0}
+button{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:12px;
+  padding:6px 12px;
+  font-size:14px;
+}
+main{
+  padding:16px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:16px;
+}
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:14px 14px 10px;
+}
+.card h2{
+  font-size:15px;
+  margin:0 0 8px;
+  border-bottom:1px dashed var(--line);
+  padding-bottom:6px;
+}
+ul{list-style:none;padding:0;margin:0}
+li{
+  padding:4px 0;
+}
+input[type=checkbox]{width:18px;height:18px}
+
+/* ✅ 讓整行可點 */
+li label{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  width:100%;
+  cursor:pointer;
+}
+li label span{
+  flex:1;
+}
+
+footer{
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  padding:12px 0 20px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>✈️ 冬季出國行李清單</h1>
+  <button onclick="resetAll()">全部重置</button>
+</header>
+
+<main>
+
+<!-- 隨身 -->
+<div class="card">
+<h2>🎒 阿比👦🏻｜隨身</h2>
+<ul>
+<li><label><input type="checkbox"><span>玩具</span></label></li>
+<li><label><input type="checkbox"><span>水杯</span></label></li>
+<li><label><input type="checkbox"><span>濕紙巾</span></label></li>
+<li><label><input type="checkbox"><span>口罩</span></label></li>
+<li><label><input type="checkbox"><span>羽絨外套</span></label></li>
+</ul>
+</div>
+
+<div class="card">
+<h2>🎒 汗寶👶🏼｜隨身</h2>
+<ul>
+<li><label><input type="checkbox"><span>玩具</span></label></li>
+<li><label><input type="checkbox"><span>水杯</span></label></li>
+<li><label><input type="checkbox"><span>濕紙巾</span></label></li>
+<li><label><input type="checkbox"><span>口罩</span></label></li>
+<li><label><input type="checkbox"><span>羽絨外套</span></label></li>
+</ul>
+</div>
+
+<div class="card">
+<h2>👱🏻‍♀️ 庭｜隨身</h2>
+<ul>
+<li><label><input type="checkbox"><span>護照（4 本）</span></label></li>
+<li><label><input type="checkbox"><span>耳機</span></label></li>
+<li><label><input type="checkbox"><span>筆</span></label></li>
+<li><label><input type="checkbox"><span>行動電源</span></label></li>
+<li><label><input type="checkbox"><span>英明格</span></label></li>
+<li><label><input type="checkbox"><span>體溫計</span></label></li>
+<li><label><input type="checkbox"><span>安佳熱</span></label></li>
+</ul>
+</div>
+
+<div class="card">
+<h2>🐷 儒｜隨身</h2>
+<ul>
+<li><label><input type="checkbox"><span>行動電源</span></label></li>
+<li><label><input type="checkbox"><span>牙線棒</span></label></li>
+</ul>
+</div>
+
+<!-- 托運 -->
+<div class="card">
+<h2>🧴 共用｜托運</h2>
+<ul>
+<li><label><input type="checkbox"><span>吹風機</span></label></li>
+<li><label><input type="checkbox"><span>知母時吸鼻涕</span></label></li>
+<li><label><input type="checkbox"><span>人工皮</span></label></li>
+<li><label><input type="checkbox"><span>乳液</span></label></li>
+<li><label><input type="checkbox"><span>食物剪</span></label></li>
+<li><label><input type="checkbox"><span>兒子的餐具</span></label></li>
+<li><label><input type="checkbox"><span>兒子的牙膏</span></label></li>
+<li><label><input type="checkbox"><span>依普芬</span></label></li>
+<li><label><input type="checkbox"><span>希普利敏</span></label></li>
+</ul>
+</div>
+
+<div class="card">
+<h2>🧳 阿比👦🏻｜托運</h2>
+<ul>
+<li><label><input type="checkbox"><span>牙刷</span></label></li>
+<li><label><input type="checkbox"><span>衣服 N 件</span></label></li>
+<li><label><input type="checkbox"><span>褲子 N 件</span></label></li>
+<li><label><input type="checkbox"><span>襪子 N 件</span></label></li>
+<li><label><input type="checkbox"><span>發熱衣 N 件</span></label></li>
+<li><label><input type="checkbox"><span>發熱褲 N 件</span></label></li>
+<li><label><input type="checkbox"><span>內褲 N 件</span></label></li>
+</ul>
+</div>
+
+<div class="card">
+<h2>🧳 汗寶👶🏼｜托運</h2>
+<ul>
+<li><label><input type="checkbox"><span>牙刷</span></label></li>
+<li><label><input type="checkbox"><span>衣服 N 件</span></label></li>
+<li><label><input type="checkbox"><span>褲子 N 件</span></label></li>
+<li><label><input type="checkbox"><span>襪子 N 件</span></label></li>
+<li><label><input type="checkbox"><span>發熱衣 N 件</span></label></li>
+<li><label><input type="checkbox"><span>發熱褲 N 件</span></label></li>
+<li><label><input type="checkbox"><span>內褲 N 件</span></label></li>
+</ul>
+</div>
+
+<div class="card">
+<h2>👱🏻‍♀️ 庭｜托運</h2>
+<ul>
+<li><label><input type="checkbox"><span>牙刷</span></label></li>
+<li><label><input type="checkbox"><span>睡衣</span></label></li>
+<li><label><input type="checkbox"><span>充電器</span></label></li>
+<li><label><input type="checkbox"><span>拖鞋</span></label></li>
+<li><label><input type="checkbox"><span>衣服 N 件</span></label></li>
+<li><label><input type="checkbox"><span>褲子 N 件</span></label></li>
+<li><label><input type="checkbox"><span>襪子 N 件</span></label></li>
+<li><label><input type="checkbox"><span>發熱衣 N 件</span></label></li>
+<li><label><input type="checkbox"><span>發熱褲 N 件</span></label></li>
+<li><label><input type="checkbox"><span>內衣 N 件</span></label></li>
+<li><label><input type="checkbox"><span>內褲 N 件</span></label></li>
+<li><label><input type="checkbox"><span>隱形眼鏡</span></label></li>
+<li><label><input type="checkbox"><span>保養品</span></label></li>
+<li><label><input type="checkbox"><span>化妝品</span></label></li>
+<li><label><input type="checkbox"><span>洗面乳</span></label></li>
+<li><label><input type="checkbox"><span>卸妝紙巾</span></label></li>
+</ul>
+</div>
+
+<div class="card">
+<h2>🐷 儒｜托運</h2>
+<ul>
+<li><label><input type="checkbox"><span>牙刷</span></label></li>
+<li><label><input type="checkbox"><span>牙膏</span></label></li>
+<li><label><input type="checkbox"><span>充電器</span></label></li>
+<li><label><input type="checkbox"><span>拖鞋</span></label></li>
+<li><label><input type="checkbox"><span>衣服 N 件</span></label></li>
+<li><label><input type="checkbox"><span>褲子 N 件</span></label></li>
+<li><label><input type="checkbox"><span>襪子 N 件</span></label></li>
+<li><label><input type="checkbox"><span>發熱衣 N 件</span></label></li>
+<li><label><input type="checkbox"><span>發熱褲 N 件</span></label></li>
+<li><label><input type="checkbox"><span>內褲 N 件</span></label></li>
+<li><label><input type="checkbox"><span>隱形眼鏡</span></label></li>
+</ul>
+</div>
+
+</main>
+
+<footer>
+  同一個檔案可重複使用｜勾選會自動記住
+</footer>
+
+<script>
+const boxes = document.querySelectorAll('input[type=checkbox]');
+boxes.forEach((box,i)=>{
+  const key = 'pack_'+i;
+  box.checked = localStorage.getItem(key)==='1';
+  box.addEventListener('change',()=>localStorage.setItem(key,box.checked?'1':'0'));
+});
+function resetAll(){
+  boxes.forEach((box,i)=>{
+    box.checked=false;
+    localStorage.removeItem('pack_'+i);
+  });
+}
+</script>
+
+</body>
+</html>
