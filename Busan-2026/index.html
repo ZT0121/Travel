@@ -81,7 +81,8 @@
       .grid{grid-template-columns: 1.2fr .8fr;}
       .grid .full{grid-column: 1 / -1;}
     }
-    .maplink{
+    .maplink,
+    .maplink:visited{
       color:var(--muted);
       text-decoration:none;
       border-bottom:1px dashed rgba(107,114,128,.4);
@@ -90,6 +91,7 @@
       color:var(--ink);
       border-bottom-color:var(--ink);
     }
+
 
     .card{
       background: var(--card);
@@ -395,7 +397,7 @@
     href="https://map.naver.com/v5/search/10,%20Bujeon-ro%2020beon-gil,%20Busanjin-gu,%20Busan"
     target="_blank"
     rel="noopener"
-  > 10, Bujeon-ro 20beon-gil, Busanjin-gu, Busan, Korea
+  >10, Bujeon-ro 20beon-gil, Busanjin-gu, Busan, Korea</a>
       </div>
     </div>
     <div class="pill">
@@ -1186,7 +1188,6 @@
     setTimeout(()=>toast("先到「匯率」抓一次，記帳會自動換算"), 700);
   }
 
-  <script>
   // 出發日（台灣時間）
   const DEPART_AT = new Date("2026-01-21T00:00:00+08:00");
   const pretrip = document.getElementById("pretripBlock");
@@ -1197,7 +1198,6 @@
       pretrip.style.display = "none";   // 出發日(含)之後自動隱藏
     }
   }
-</script>
 
   
 </script>
