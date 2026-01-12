@@ -395,16 +395,19 @@
   <!-- 行程 -->
   <section id="view-itin" class="grid">
      
-<!-- 行前準備區：出發後可整段刪除 -->
-<div class="card full">
-  <div class="hd">
-    <h2>行前準備</h2>
-    <div class="hint"></div>
-  </div>
-  <div class="bd">
-    <a class="btn secondary pretrip-link" href="./Packing.html">🧳 行李清單</a>
+<!-- 行前準備區：出發後自動隱藏 -->
+<div id="pretripBlock">
+  <div class="card full">
+    <div class="hd">
+      <h2>行前準備</h2>
+      <div class="hint"></div>
+    </div>
+    <div class="bd">
+      <a class="btn secondary pretrip-link" href="./Packing.html">🧳 行李清單</a>
+    </div>
   </div>
 </div>
+
 
     
     
@@ -1167,6 +1170,21 @@
   if(!state.rateTwdPerKrw){
     setTimeout(()=>toast("先到「匯率」抓一次，記帳會自動換算"), 700);
   }
+
+  <script>
+  // 出發日（台灣時間）
+  const DEPART_AT = new Date("2026-01-21T00:00:00+08:00");
+  const pretrip = document.getElementById("pretripBlock");
+
+  if (pretrip){
+    const now = new Date();
+    if (now >= DEPART_AT){
+      pretrip.style.display = "none";   // 出發日(含)之後自動隱藏
+    }
+  }
+</script>
+
+  
 </script>
 </body>
 </html>
