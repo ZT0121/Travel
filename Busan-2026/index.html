@@ -81,6 +81,16 @@
       .grid{grid-template-columns: 1.2fr .8fr;}
       .grid .full{grid-column: 1 / -1;}
     }
+    .maplink{
+      color:var(--muted);
+      text-decoration:none;
+      border-bottom:1px dashed rgba(107,114,128,.4);
+    }
+    .maplink:hover{
+      color:var(--ink);
+      border-bottom-color:var(--ink);
+    }
+
     .card{
       background: var(--card);
       border: 1px solid var(--line);
@@ -380,7 +390,12 @@
     <div>
       <h1>2026 最帥男團 IN BUSAN</h1>
       <div class="sub">
-        🏨 西面 Hound Hotel｜📍 10, Bujeon-ro 20beon-gil, Busanjin-gu, Busan, Korea
+        🏨 西面 Hound Hotel｜📍<a
+    class="maplink"
+    href="https://map.naver.com/v5/search/10,%20Bujeon-ro%2020beon-gil,%20Busanjin-gu,%20Busan"
+    target="_blank"
+    rel="noopener"
+  > 10, Bujeon-ro 20beon-gil, Busanjin-gu, Busan, Korea
       </div>
     </div>
     <div class="pill">
