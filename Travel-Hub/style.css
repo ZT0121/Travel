@@ -1,11 +1,31 @@
+@font-face {
+  font-family: "Sarasa Mono TC";
+  src:
+    local("SarasaMonoTC-Regular"),
+    url("./fonts/SarasaMonoTC-Regular.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Sarasa Mono TC";
+  src:
+    local("SarasaMonoTC-SemiBold"),
+    url("./fonts/SarasaMonoTC-SemiBold.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+}
 :root {
-  --bg: #f3f1ee; /* 莫蘭迪米白 */
-  --card: #ffffffcc;
-  --ink: #1f2937;
-  --muted: #6b7280;
-  --line: #e5e7eb;
-  --brand: #6b7280; /* 灰藍 */
-  --brand2: #8b7b6b; /* 灰棕 */
+  --bg: #f8f3e9;
+  --card: #fffdf7;
+  --ink: #333331;
+  --muted: #676661;
+  --line: #d9d6ce;
+  --brand: #51514e;
+  --brand2: #464744;
+  --tint: #e9e6df;
+  --leaf: #e9e8e4;
   --ok: #0f766e;
   --warn: #b45309;
   --bad: #b91c1c;
@@ -14,12 +34,8 @@
   --radius2: 14px;
   --safeB: env(safe-area-inset-bottom, 0px);
   --safeT: env(safe-area-inset-top, 0px);
-  --mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
-  --sans:
-    system-ui, -apple-system, "Noto Sans TC", "PingFang TC",
-    "Microsoft JhengHei", sans-serif;
+  --sans: "Sarasa Mono TC", "Microsoft JhengHei", monospace;
+  --mono: var(--sans);
 }
 * {
   box-sizing: border-box;
@@ -31,12 +47,12 @@ body {
   background:
     radial-gradient(
       1200px 600px at 10% -10%,
-      rgba(107, 114, 128, 0.18),
+      rgba(159, 151, 136, 0.16),
       transparent 60%
     ),
     radial-gradient(
       900px 500px at 90% 0%,
-      rgba(139, 123, 107, 0.16),
+      rgba(150, 151, 146, 0.15),
       transparent 55%
     ),
     var(--bg);
@@ -48,8 +64,8 @@ header {
   z-index: 30;
   background: linear-gradient(
     to bottom,
-    rgba(243, 241, 238, 0.96),
-    rgba(243, 241, 238, 0.72)
+    rgba(248, 243, 233, 0.96),
+    rgba(248, 243, 233, 0.72)
   );
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
@@ -107,8 +123,8 @@ nav {
   padding: 10px 12px calc(10px + var(--safeB));
   background: linear-gradient(
     to top,
-    rgba(243, 241, 238, 0.98),
-    rgba(243, 241, 238, 0.7)
+    rgba(248, 243, 233, 0.98),
+    rgba(248, 243, 233, 0.7)
   );
   backdrop-filter: blur(10px);
   border-top: 1px solid var(--line);
@@ -121,6 +137,7 @@ nav {
   gap: 10px;
 }
 nav button {
+  font-family: var(--sans);
   appearance: none;
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.72);
@@ -136,10 +153,10 @@ nav button {
   box-shadow: 0 8px 20px rgba(31, 41, 55, 0.07);
 }
 nav button.active {
-  border-color: rgba(107, 114, 128, 0.35);
-  background: #fff;
-  color: var(--ink);
-  font-weight: 700;
+  border-color: var(--brand2);
+  background: var(--brand2);
+  color: #fff;
+  font-weight: 600;
 }
 label {
   font-size: 12px;
@@ -168,6 +185,7 @@ textarea:focus {
   box-shadow: 0 0 0 4px rgba(107, 114, 128, 0.12);
 }
 button {
+  font-family: var(--sans);
   appearance: none;
   border: 1px solid rgba(107, 114, 128, 0.35);
   background: #fff;
@@ -192,9 +210,9 @@ td {
   vertical-align: top;
 }
 th {
-  background: rgba(243, 241, 238, 0.7);
+  background: rgba(248, 243, 233, 0.7);
   color: var(--muted);
-  font-weight: 700;
+  font-weight: 600;
   text-align: left;
 }
 tr:last-child td {
@@ -217,7 +235,7 @@ summary {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  font-weight: 800;
+  font-weight: 600;
 }
 summary::-webkit-details-marker {
   display: none;
@@ -313,7 +331,8 @@ header .title {
   align-items: center;
 }
 header .title b {
-  font-size: 18px;
+  font: 600 24px/1.1 var(--sans);
+  color: var(--brand);
 }
 header .title small {
   display: block;
@@ -478,4 +497,84 @@ pre {
   .itinTable td:last-child {
     min-width: 0;
   }
+}
+
+.trip-cover {
+  background: linear-gradient(112deg, var(--card) 40%, var(--tint));
+  border-inline-start: 5px solid var(--brand);
+  padding: clamp(18px, 3vw, 30px);
+}
+.trip-cover h1,
+#page h2,
+dialog h2,
+summary {
+  font-family: var(--sans);
+  letter-spacing: 0.02em;
+}
+.trip-cover h1 {
+  font-size: clamp(28px, 4vw, 38px);
+  line-height: 1.25;
+}
+.trip-cover small {
+  color: var(--brand);
+  font-weight: 600;
+}
+#page h2,
+dialog h2 {
+  font-size: 21px;
+  line-height: 1.45;
+}
+.grid .card small {
+  color: var(--brand2);
+  font-weight: 600;
+}
+summary {
+  color: var(--brand2);
+  background: var(--leaf);
+  font-size: 17px;
+}
+details[open] summary {
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 8px;
+}
+button.primary,
+#page [data-act="account"] {
+  color: white;
+  background: var(--brand);
+  border-color: var(--brand);
+}
+td:first-child,
+input[type="number"] {
+  font-variant-numeric: tabular-nums;
+}
+a,
+a:visited {
+  color: var(--brand2);
+}
+
+body {
+  font-weight: 400;
+  line-height: 1.55;
+}
+b,
+strong,
+h1,
+h2,
+h3,
+th {
+  font-weight: 600;
+}
+button,
+select,
+input,
+textarea {
+  font-family: var(--sans);
+}
+.trip-cover p,
+td:first-child {
+  font-variant-numeric: tabular-nums;
+}
+.trip-cover small {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 2px;
 }

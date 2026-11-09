@@ -325,7 +325,7 @@ function home() {
           ],
         ];
   return (
-    '<div class="card"><small>' +
+    '<div class="card trip-cover"><small>' +
     esc(title) +
     "</small><h1>" +
     esc(d.name) +
@@ -603,7 +603,11 @@ function fx() {
     btn("手動輸入", "manual") +
     "<label>" +
     esc(d.currency) +
-    '<input id="foreign" type="number" step="any"></label><label>TWD<input id="twd" type="number" step="any"></label><small>市場參考匯率與刷卡、現金實際成交匯率可能不同。 <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener noreferrer">Rates by ExchangeRate-API</a></small></div>'
+    '<input id="foreign" type="number" step="any" value="' +
+    esc(filter.foreign ?? "") +
+    '"></label><label>TWD<input id="twd" type="number" step="any" value="' +
+    esc(filter.twd ?? "") +
+    '"></label><small>市場參考匯率與刷卡、現金實際成交匯率可能不同。 <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener noreferrer">Rates by ExchangeRate-API</a></small></div>'
   );
 }
 function render() {
@@ -1094,7 +1098,9 @@ document.addEventListener("input", (e) => {
   if (["twd", "foreign"].includes(e.target.id)) {
     const r = trip.data.rate,
       foreign = e.target.id === "foreign";
-    $("#" + (foreign ? "twd" : "foreign")).value =
+    filter[e.target.id] = e.target.value;
+    const other = foreign ? "twd" : "foreign";
+    filter[other] = $("#" + other).value =
       r && e.target.value
         ? Number((foreign ? e.target.value * r : e.target.value / r).toFixed(4))
         : "";

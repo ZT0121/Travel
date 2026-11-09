@@ -125,7 +125,7 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
         );
       }
       const name = path.slice(1) || "index.html";
-      if (!/^[\w.-]+$/.test(name)) return json({}, 404);
+      if (!/^(?:fonts\/)?[\w.-]+$/.test(name)) return json({}, 404);
       const contents = await readFile(new URL(name, root));
       res.setHeader(
         "content-type",
