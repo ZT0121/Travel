@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#506775" />
+    <meta name="theme-color" content="#f3f1ee" />
     <link rel="manifest" href="./manifest.webmanifest" />
     <link rel="icon" href="./icon-192.png" />
     <link rel="stylesheet" href="./style.css" />
@@ -11,12 +11,14 @@
   </head>
   <body>
     <header>
-      <div><b>Travel Hub</b><small>家庭旅行手帳</small></div>
-      <button id="account">帳號</button>
+      <div class="title">
+        <div><b>Travel Hub</b><small class="sub">家庭旅行手帳</small></div>
+        <button id="account">帳號</button>
+      </div>
     </header>
     <main>
       <section id="top"></section>
-      <nav id="nav"></nav>
+      <nav aria-label="功能選單"><div class="nav-inner" id="nav"></div></nav>
       <section id="page"></section>
       <aside id="sync" aria-live="polite"></aside>
     </main>

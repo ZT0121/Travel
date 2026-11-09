@@ -89,8 +89,7 @@ function inputs(defs, values) {
     .join("");
 }
 function setup() {
-  $("#top").innerHTML =
-    '<div class="hero"><small>TRAVEL HUB</small><h1>家庭旅行手帳</h1><p>登入個人帳號，開啟兩人的旅行。</p></div>';
+  $("#top").innerHTML = "";
   $("#page").innerHTML =
     '<div class="card"><h2>' +
     (cfg ? "個人帳號登入" : "連接旅行資料庫") +
@@ -326,7 +325,7 @@ function home() {
           ],
         ];
   return (
-    '<div class="hero"><small>' +
+    '<div class="card"><small>' +
     esc(title) +
     "</small><h1>" +
     esc(d.name) +
@@ -386,7 +385,7 @@ function itinerary() {
           (days(d.start, date) + 1) +
           " ｜ " +
           esc(date) +
-          '</summary><div class="table"><table><thead><tr><th>時間</th><th>行程</th><th>交通</th><th>備註</th></tr></thead><tbody>' +
+          '</summary><div class="table"><table class="itinTable"><thead><tr><th>時間</th><th>行程</th><th>交通</th><th>備註</th></tr></thead><tbody>' +
           (items
             .filter((r) => r.data.date === date)
             .sort(byTime)

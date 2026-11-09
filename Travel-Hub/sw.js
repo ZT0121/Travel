@@ -1,5 +1,5 @@
 const prefix = "travel-hub:" + self.registration.scope + ":";
-const cacheName = prefix + "v1-2";
+const cacheName = prefix + "v1-3";
 const shell = [
   "./",
   "./index.html",
@@ -13,7 +13,12 @@ const shell = [
   "./icon-512.png",
 ];
 self.addEventListener("install", (e) =>
-  e.waitUntil(caches.open(cacheName).then((c) => c.addAll(shell))),
+  e.waitUntil(
+    caches
+      .open(cacheName)
+      .then((c) => c.addAll(shell))
+      .then(() => self.skipWaiting()),
+  ),
 );
 self.addEventListener("activate", (e) =>
   e.waitUntil(
