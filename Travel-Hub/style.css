@@ -17,7 +17,7 @@
   font-display: swap;
 }
 :root {
-  --bg: #c9c7c3;
+  --bg: #f7f7f5;
   --card: #fdfdfc;
   --ink: #3f3f3d;
   --secondary: #7a7873;
@@ -31,7 +31,7 @@
   --ok: #0f766e;
   --warn: #b45309;
   --bad: #b91c1c;
-  --shadow: 0 10px 30px rgba(102, 95, 89, 0.08);
+  --shadow: 0 3px 12px rgba(102, 95, 89, 0.05);
   --radius: 18px;
   --radius2: 14px;
   --safeB: env(safe-area-inset-bottom, 0px);
@@ -46,18 +46,8 @@ body {
   margin: 0;
   font-family: var(--sans);
   color: var(--ink);
-  background:
-    radial-gradient(
-      1200px 600px at 10% -10%,
-      rgba(200, 184, 164, 0.1),
-      transparent 60%
-    ),
-    radial-gradient(
-      900px 500px at 90% 0%,
-      rgba(102, 95, 89, 0.08),
-      transparent 55%
-    ),
-    var(--bg);
+  min-height: 100dvh;
+  background: var(--bg);
   padding-bottom: calc(84px + var(--safeB));
 }
 header {
@@ -502,7 +492,7 @@ pre {
 }
 
 .trip-cover {
-  background: linear-gradient(112deg, var(--card) 40%, var(--leaf));
+  background: linear-gradient(110deg, var(--leaf) 45%, color-mix(in srgb, var(--tint) 48%, var(--leaf)));
   border-inline-start: 5px solid var(--tint);
   padding: clamp(18px, 3vw, 30px);
 }
