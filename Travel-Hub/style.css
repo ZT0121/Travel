@@ -17,15 +17,15 @@
   font-display: swap;
 }
 :root {
-  --bg: #f8f3e9;
-  --card: #fffdf7;
+  --bg: #f5f5f3;
+  --card: #fdfdfc;
   --ink: #333331;
   --muted: #676661;
-  --line: #d9d6ce;
+  --line: #d8d8d5;
   --brand: #51514e;
   --brand2: #464744;
-  --tint: #e9e6df;
-  --leaf: #e9e8e4;
+  --tint: #e8e8e5;
+  --leaf: #eaeae8;
   --ok: #0f766e;
   --warn: #b45309;
   --bad: #b91c1c;
@@ -47,12 +47,12 @@ body {
   background:
     radial-gradient(
       1200px 600px at 10% -10%,
-      rgba(159, 151, 136, 0.16),
+      rgba(150, 151, 150, 0.10),
       transparent 60%
     ),
     radial-gradient(
       900px 500px at 90% 0%,
-      rgba(150, 151, 146, 0.15),
+      rgba(148, 149, 150, 0.08),
       transparent 55%
     ),
     var(--bg);
@@ -64,8 +64,8 @@ header {
   z-index: 30;
   background: linear-gradient(
     to bottom,
-    rgba(248, 243, 233, 0.96),
-    rgba(248, 243, 233, 0.72)
+    rgba(245, 245, 243, 0.96),
+    rgba(245, 245, 243, 0.72)
   );
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
@@ -123,8 +123,8 @@ nav {
   padding: 10px 12px calc(10px + var(--safeB));
   background: linear-gradient(
     to top,
-    rgba(248, 243, 233, 0.98),
-    rgba(248, 243, 233, 0.7)
+    rgba(245, 245, 243, 0.98),
+    rgba(245, 245, 243, 0.7)
   );
   backdrop-filter: blur(10px);
   border-top: 1px solid var(--line);
@@ -210,7 +210,7 @@ td {
   vertical-align: top;
 }
 th {
-  background: rgba(248, 243, 233, 0.7);
+  background: rgba(245, 245, 243, 0.7);
   color: var(--muted);
   font-weight: 600;
   text-align: left;
