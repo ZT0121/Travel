@@ -454,7 +454,7 @@ function list() {
     if (filter[k]) result = result.filter((r) => r.data[k] === filter[k]);
   };
   if (view === "packing_items") {
-    dropdown("person", "全部人員", people);
+    dropdown("person", "全部", people);
     dropdown("bag", "全部行李類型", ["隨身", "托運"]);
     tools += btn("複製前趟項目", "copy");
     const done = source.filter((r) => r.data.done).length;
