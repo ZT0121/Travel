@@ -335,6 +335,47 @@ function editFlight(leg) {
     },
   );
 }
+function scheduledItems() {
+  const items = live("itinerary_items");
+  for (const [leg, label] of Object.entries(flightLegs)) {
+    const f = trip.data.flights?.[leg];
+    if (!f || !Object.values(f).some(Boolean)) continue;
+    const name = [label + "航班", f.number].filter(Boolean).join(" ");
+    const route = [f.from, f.to].filter(Boolean).join(" → ");
+    const stops = [
+      [f.depart, "起飛", f.from],
+      [f.arrive, "抵達", f.to],
+    ].filter(([when]) => when);
+    if (!stops.length) {
+      const date = leg === "outbound" ? trip.data.start : trip.data.end;
+      items.push({
+        leg,
+        data: {
+          date,
+          name,
+          place: route,
+          transport: "飛機",
+          notes: "起降時間待填",
+        },
+      });
+    }
+    for (const [when, event, airport] of stops) {
+      const [date, time] = when.split("T");
+      items.push({
+        leg,
+        data: {
+          date,
+          time,
+          name: name + " · " + event,
+          place: airport,
+          transport: "飛機",
+          notes: "機場當地時間",
+        },
+      });
+    }
+  }
+  return items;
+}
 function home() {
   const d = trip.data,
     today = localDate(d.timezone),
@@ -342,7 +383,7 @@ function home() {
     after = today > d.end;
   const pack = live("packing_items"),
     done = pack.filter((r) => r.data.done).length,
-    agenda = live("itinerary_items")
+    agenda = scheduledItems()
       .filter((r) => r.data.date === today)
       .sort(byTime);
   const title = before
@@ -394,7 +435,9 @@ function home() {
           '<div class="card"><small>' +
           k +
           "</small><h3>" +
-          (k === "住宿" || k === "飯店地址" ? esc(hotelLines(v)).replaceAll("\n", "<br>") : esc(v)) +
+          (k === "住宿" || k === "飯店地址"
+            ? esc(hotelLines(v)).replaceAll("\n", "<br>")
+            : esc(v)) +
           "</h3>" +
           (k === "打包進度" ? packingProgress(done, pack.length) : "") +
           "</div>",
@@ -422,7 +465,7 @@ const byTime = (a, b) =>
   (a.data.time || "24").localeCompare(b.data.time || "24") ||
   Number(a.data.order || 0) - Number(b.data.order || 0);
 function itinerary() {
-  const items = live(view),
+  const items = scheduledItems(),
     d = trip.data,
     dates = new Set(items.map((r) => r.data.date));
   for (let i = 0; i <= days(d.start, d.end); i++)
@@ -463,8 +506,9 @@ function itinerary() {
                 "</td><td>" +
                 esc(x.notes) +
                 "<div>" +
-                btn("移動", "move", r.id) +
-                (editMode ? controls(r) : "") +
+                (r.leg
+                  ? btn("編輯航班", "flight", r.leg)
+                  : btn("移動", "move", r.id) + (editMode ? controls(r) : "")) +
                 "</div></td></tr>"
               );
             })
