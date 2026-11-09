@@ -286,6 +286,54 @@ async function refresh() {
 function packingProgress(done, total) {
   return `<progress class="packing-progress" aria-label="打包進度" value="${done}" max="${Math.max(total, 1)}"></progress>`;
 }
+const flightLegs = { outbound: "去程", inbound: "回程" };
+const flightFields = [
+  ["number", "航班號碼"],
+  ["from", "出發機場"],
+  ["depart", "起飛（當地日期與時間）", "datetime-local"],
+  ["to", "抵達機場"],
+  ["arrive", "抵達（當地日期與時間）", "datetime-local"],
+];
+function flightTickets(data) {
+  const tickets = Object.entries(flightLegs).map(([leg, label]) => {
+    const flight = data.flights?.[leg] || {};
+    const filled = Object.values(flight).some(Boolean);
+    const stop = (airport, time) =>
+      `<span class="flight-stop"><strong>${esc(airport || "—")}</strong><small>${esc((time || "").replace("T", " "))}</small></span>`;
+    const route = filled
+      ? `<span class="flight-route">${stop(flight.from, flight.depart)}<span aria-hidden="true">→</span>${stop(flight.to, flight.arrive)}</span>`
+      : "<span>＋ 填寫航班</span>";
+    return `<button type="button" class="flight-ticket" data-act="flight" data-id="${leg}" aria-label="${filled ? "編輯" : "填寫"}${label}航班"><span class="ticket-stub"><span aria-hidden="true">✈︎</span>${label}</span><span class="ticket-body">${filled ? `<b>${esc(flight.number || label + "航班")}</b>` : ""}${route}</span></button>`;
+  });
+  return (
+    '<section aria-label="航班資訊"><h2>航班資訊</h2><div class="flight-grid">' +
+    tickets.join("") +
+    "</div></section>"
+  );
+}
+function editFlight(leg) {
+  const target = trip;
+  modal(
+    flightLegs[leg] + "航班",
+    inputs(flightFields, target.data.flights?.[leg] || {}),
+    async (form) => {
+      const flights = { ...target.data.flights };
+      const values = Object.fromEntries(
+        flightFields.map(([key]) => [key, String(form.get(key) || "").trim()]),
+      );
+      if (Object.values(values).some(Boolean)) flights[leg] = values;
+      else delete flights[leg];
+      await store.save(
+        "trips",
+        target.id,
+        null,
+        { ...target.data, flights },
+        false,
+        target.stamp,
+      );
+    },
+  );
+}
 function home() {
   const d = trip.data,
     today = localDate(d.timezone),
@@ -304,7 +352,7 @@ function home() {
   const tiles = before
     ? [
         ["住宿", d.hotel || "尚未填寫"],
-        ["交通", d.transport || "尚未填寫"],
+        ["飯店地址", d.hotelAddress || "尚未填寫"],
         ["打包進度", done + " / " + pack.length],
       ]
     : after
@@ -351,7 +399,9 @@ function home() {
           "</div>",
       )
       .join("") +
-    '</div><div class="tools">' +
+    "</div>" +
+    flightTickets(d) +
+    '<div class="tools">' +
     btn("完整行程", "nav", "itinerary_items") +
     btn("快速記帳", "expense") +
     btn("購物清單", "nav", "shopping_items") +
@@ -696,6 +746,8 @@ function editor(table, r = null, initial = {}, mode = "") {
     ...initial,
   };
   let defs = fields(table, currency);
+  if (table === "trips" && r?.data.transport)
+    defs.push(["transport", "交通摘要（原有資料）"]);
   if (mode === "move")
     defs = defs.filter(([k]) => ["date", "time", "endTime"].includes(k));
   const photos =
@@ -900,6 +952,7 @@ async function action(a, id) {
     location.reload();
     return;
   }
+  if (a === "flight" && Object.hasOwn(flightLegs, id)) return editFlight(id);
   if (a === "nav") return go(id);
   if (a === "choose") return choose(id);
   if (a === "mode") {

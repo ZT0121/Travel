@@ -25,8 +25,8 @@ export function fields(table, currency) {
       ["start", "出發日期", "date", true],
       ["end", "回程日期", "date", true],
       ["currency", "目的地幣別", "text", true],
-      ["hotel", "住宿摘要"],
-      ["transport", "交通摘要"],
+      ["hotel", "住宿名稱"],
+      ["hotelAddress", "飯店地址"],
     ],
     itinerary_items: [
       date,
