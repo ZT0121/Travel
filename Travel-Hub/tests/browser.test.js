@@ -226,6 +226,25 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
       await expect(p.locator("#sync")).toContainText("已同步");
     };
     const fill = (p, k, v) => p.locator('dialog [name="' + k + '"]').fill(v);
+    await nav(a, "行程");
+    await expect(a.locator(".lodging-row")).toHaveCount(0);
+    await nav(a, "旅行");
+    await click(a, "編輯");
+    await fill(a, "hotel", "Sample Hotel");
+    await fill(a, "hotelAddress", "Sample Road");
+    await save(a);
+    await nav(b, "行程");
+    await expect(b.locator(".lodging-row")).toHaveCount(10);
+    for (const day of await b.locator(".itinTable tbody").all()) {
+      await expect(day.locator("tr").first()).toContainText("從住宿出發");
+      await expect(day.locator("tr").last()).toContainText("返回住宿");
+      await expect(day.locator("tr").last().getByRole("link")).toHaveAttribute(
+        "href",
+        /Sample%20Road/,
+      );
+    }
+    await nav(b, "首頁");
+    await nav(a, "首頁");
     await click(a, "填寫去程航班");
     await fill(a, "number", "TEST123");
     await fill(a, "from", "AAA");
