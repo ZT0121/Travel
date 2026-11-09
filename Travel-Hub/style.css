@@ -750,3 +750,38 @@ table.itinTable tbody tr.itinerary-flight > td {
     flex-wrap: wrap;
   }
 }
+
+table.itinTable tbody tr.lodging-row {
+  display: table-row;
+}
+table.itinTable tbody tr.lodging-row > td {
+  display: table-cell;
+  white-space: normal;
+  padding: 8px 10px;
+  background: var(--leaf);
+}
+.lodging-stop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--sans);
+  color: var(--ink);
+}
+.lodging-stop b,
+.lodging-stop a {
+  flex: none;
+}
+.lodging-stop span {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.lodging-stop a {
+  margin-inline-start: auto;
+}
+@media (max-width: 640px) {
+  table.itinTable tbody tr.lodging-row,
+  table.itinTable tbody tr.lodging-row > td {
+    display: block;
+  }
+}
