@@ -226,6 +226,15 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
       await expect(p.locator("#sync")).toContainText("已同步");
     };
     const fill = (p, k, v) => p.locator('dialog [name="' + k + '"]').fill(v);
+    await click(a, "填寫去程航班");
+    await fill(a, "number", "TEST123");
+    await fill(a, "from", "AAA");
+    await fill(a, "to", "BBB");
+    await fill(a, "depart", "2027-01-21T10:00");
+    await save(a);
+    await expect(b.locator(".flight-ticket").first()).toContainText("TEST123");
+    await expect(b.locator(".flight-ticket").last()).toContainText("填寫航班");
+    await expect(a.locator("#page")).toContainText("飯店地址");
     await nav(a, "行程");
     await click(a, "編輯行程");
     for (const name of ["A景點", "B景點"]) {

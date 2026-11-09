@@ -587,3 +587,83 @@ td:first-child {
 aside {
   color: var(--ink);
 }
+
+.flight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr));
+  gap: 12px;
+  margin: 8px 0 16px;
+}
+.flight-ticket {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0;
+  text-align: left;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+.ticket-stub {
+  position: relative;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 3px;
+  flex: 0 0 58px;
+  padding: 9px 4px;
+  background: var(--leaf);
+  border-inline-end: 1px dashed var(--tint);
+  font-weight: 600;
+  color: var(--brand);
+}
+.ticket-stub > span {
+  font-size: 20px;
+  line-height: 1;
+}
+.ticket-stub::before,
+.ticket-stub::after {
+  content: "";
+  position: absolute;
+  right: -5px;
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--bg);
+}
+.ticket-stub::before {
+  top: -6px;
+}
+.ticket-stub::after {
+  bottom: -6px;
+}
+.ticket-body {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  align-content: center;
+  gap: 4px;
+  padding: 12px;
+  color: var(--brand);
+}
+.flight-route {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: start;
+  gap: 6px;
+}
+.flight-stop {
+  display: grid;
+  overflow-wrap: anywhere;
+}
+.flight-stop strong {
+  color: var(--ink);
+}
+.flight-stop small {
+  font-variant-numeric: tabular-nums;
+}
