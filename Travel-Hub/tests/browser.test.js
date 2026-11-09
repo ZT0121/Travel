@@ -227,7 +227,10 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
     };
     const fill = (p, k, v) => p.locator('dialog [name="' + k + '"]').fill(v);
     await nav(a, "行程");
-    await expect(a.locator(".lodging-row")).toHaveCount(0);
+    await expect(a.locator(".lodging-row")).toHaveText([
+      "從家裡出發",
+      "開心回家～",
+    ]);
     await nav(a, "旅行");
     await click(a, "編輯");
     await fill(a, "hotel", "Sample Hotel");
@@ -235,13 +238,24 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
     await save(a);
     await nav(b, "行程");
     await expect(b.locator(".lodging-row")).toHaveCount(10);
-    for (const day of await b.locator(".itinTable tbody").all()) {
-      await expect(day.locator("tr").first()).toContainText("從住宿出發");
-      await expect(day.locator("tr").last()).toContainText("返回住宿");
-      await expect(day.locator("tr").last().getByRole("link")).toHaveAttribute(
-        "href",
-        /Sample%20Road/,
-      );
+    const days = await b.locator(".itinTable tbody").all();
+    for (const [index, day] of days.entries()) {
+      const first = day.locator("tr").first();
+      const last = day.locator("tr").last();
+      if (index === 0) {
+        await expect(first).toHaveText("從家裡出發");
+        await expect(first.getByRole("link")).toHaveCount(0);
+      } else await expect(first).toContainText("從住宿出發");
+      if (index === days.length - 1) {
+        await expect(last).toHaveText("開心回家～");
+        await expect(last.getByRole("link")).toHaveCount(0);
+      } else {
+        await expect(last).toContainText("返回住宿");
+        await expect(last.getByRole("link")).toHaveAttribute(
+          "href",
+          /Sample%20Road/,
+        );
+      }
     }
     await nav(b, "首頁");
     await nav(a, "首頁");

@@ -464,6 +464,9 @@ function flightRow(row) {
   };
   return `<tr class="itinerary-flight"><td colspan="4"><div class="flight-strip"><div class="flight-identity"><small aria-hidden="true">✈︎</small><b>${esc(data.name)}</b></div><div class="strip-route">${endpoint(flight.from, flight.depart, "起飛")}<span aria-hidden="true">→</span>${endpoint(flight.to, flight.arrive, "抵達")}</div><div class="flight-foot"><small>機場當地時間</small>${editMode ? btn("編輯航班", "flight", leg) : ""}</div></div></td></tr>`;
 }
+function homeRow(label) {
+  return `<tr class="lodging-row"><td colspan="4"><div class="lodging-stop"><b>${label}</b></div></td></tr>`;
+}
 function lodgingRow(data, label) {
   if (!data.hotel && !data.hotelAddress) return "";
   const name = hotelLines(data.hotel || data.hotelAddress);
@@ -495,7 +498,9 @@ function itinerary() {
           " ｜ " +
           esc(date) +
           '</summary><div class="table"><table class="itinTable"><thead><tr><th>時間</th><th>行程</th><th>交通</th><th>備註</th></tr></thead><tbody>' +
-          lodgingRow(d, "從住宿出發") +
+          (date === d.start
+            ? homeRow("從家裡出發")
+            : lodgingRow(d, "從住宿出發")) +
           (items
             .filter((r) => r.data.date === date)
             .sort(byTime)
@@ -524,7 +529,7 @@ function itinerary() {
               );
             })
             .join("") || '<tr><td colspan="4">尚無行程</td></tr>') +
-          lodgingRow(d, "返回住宿") +
+          (date === d.end ? homeRow("開心回家～") : lodgingRow(d, "返回住宿")) +
           "</tbody></table></div></details>",
       )
       .join("")
