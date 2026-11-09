@@ -236,6 +236,24 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
     await expect(b.locator(".flight-ticket").last()).toContainText("填寫航班");
     await expect(a.locator("#page")).toContainText("飯店地址");
     await nav(a, "行程");
+    const flightRows = a
+      .locator(".itinTable tr")
+      .filter({ hasText: "TEST123" });
+    await expect(flightRows).toHaveCount(1);
+    await flightRows.getByText("編輯航班").click();
+    await fill(a, "arrive", "2027-01-22T01:30");
+    await save(a);
+    await expect(flightRows).toHaveCount(2);
+    await expect(
+      a
+        .locator("details")
+        .filter({ has: a.locator("summary", { hasText: "2027-01-22" }) }),
+    ).toContainText("TEST123 · 抵達");
+    await flightRows.first().getByText("編輯航班").click();
+    for (const k of ["number", "from", "to", "depart", "arrive"])
+      await fill(a, k, "");
+    await save(a);
+    await expect(flightRows).toHaveCount(0);
     await click(a, "編輯行程");
     for (const name of ["A景點", "B景點"]) {
       await click(a, "新增行程");
