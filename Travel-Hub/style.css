@@ -17,15 +17,17 @@
   font-display: swap;
 }
 :root {
-  --bg: #F0EBE4;
+  --bg: #c9c7c3;
   --card: #fdfdfc;
-  --ink: #665F59;
-  --muted: #69625D;
-  --line: #DAD2CA;
-  --brand: var(--ink);
-  --brand2: var(--ink);
-  --tint: #C8B8A4;
-  --leaf: color-mix(in srgb, var(--tint) 32%, var(--card));
+  --ink: #3f3f3d;
+  --secondary: #7a7873;
+  --muted: color-mix(in srgb, var(--secondary) 70%, var(--ink));
+  --line: #c8c3bd;
+  --brand: #665f59;
+  --brand2: var(--brand);
+  --tint: #c8b8a4;
+  --leaf: #f0ebe4;
+  --track: #d6d0c8;
   --ok: #0f766e;
   --warn: #b45309;
   --bad: #b91c1c;
@@ -47,7 +49,7 @@ body {
   background:
     radial-gradient(
       1200px 600px at 10% -10%,
-      rgba(200, 184, 164, 0.10),
+      rgba(200, 184, 164, 0.1),
       transparent 60%
     ),
     radial-gradient(
@@ -436,7 +438,7 @@ textarea {
 }
 dialog {
   color: var(--ink);
-  background: var(--bg);
+  background: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   width: min(460px, 94vw);
@@ -577,4 +579,35 @@ td:first-child {
 .trip-cover small {
   border-bottom: 1px solid var(--line);
   padding-bottom: 2px;
+}
+
+.packing-progress {
+  display: block;
+  width: 100%;
+  height: 8px;
+  border: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  appearance: none;
+  background: var(--track);
+  color: var(--brand);
+}
+.packing-progress::-webkit-progress-bar {
+  background: var(--track);
+}
+.packing-progress::-webkit-progress-value {
+  background: var(--brand);
+  border-radius: 4px;
+}
+.packing-progress::-moz-progress-bar {
+  background: var(--brand);
+  border-radius: 4px;
+}
+aside {
+  color: var(--ink);
+}
+nav button.active {
+  background: var(--tint);
+  color: var(--ink);
+  border-color: var(--brand);
 }

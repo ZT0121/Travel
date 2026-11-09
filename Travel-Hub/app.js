@@ -283,6 +283,9 @@ async function refresh() {
       )
       .join("");
 }
+function packingProgress(done, total) {
+  return `<progress class="packing-progress" aria-label="打包進度" value="${done}" max="${Math.max(total, 1)}"></progress>`;
+}
 function home() {
   const d = trip.data,
     today = localDate(d.timezone),
@@ -343,7 +346,9 @@ function home() {
           k +
           "</small><h3>" +
           esc(v) +
-          "</h3></div>",
+          "</h3>" +
+          (k === "打包進度" ? packingProgress(done, pack.length) : "") +
+          "</div>",
       )
       .join("") +
     '</div><div class="tools">' +
@@ -452,12 +457,15 @@ function list() {
     dropdown("person", "全部人員", people);
     dropdown("bag", "全部行李類型", ["隨身", "托運"]);
     tools += btn("複製前趟項目", "copy");
+    const done = source.filter((r) => r.data.done).length;
     extra =
-      "<p>已打包 " +
-      source.filter((r) => r.data.done).length +
+      '<div class="card"><p>已打包 ' +
+      done +
       " / " +
       source.length +
-      "</p>";
+      "</p>" +
+      packingProgress(done, source.length) +
+      "</div>";
   }
   if (view === "saved_places") {
     dropdown("category", "全部分類");
