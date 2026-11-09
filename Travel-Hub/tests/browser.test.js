@@ -240,6 +240,13 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
       .locator(".itinTable tr")
       .filter({ hasText: "TEST123" });
     await expect(flightRows).toHaveCount(1);
+    await expect(flightRows.getByText("編輯航班")).toHaveCount(0);
+    await click(a, "編輯行程");
+    await flightRows.getByText("編輯航班").click();
+    await fill(a, "arrive", "2027-01-21T14:00");
+    await save(a);
+    await expect(flightRows).toHaveCount(1);
+    await expect(flightRows).toContainText("14:00");
     await flightRows.getByText("編輯航班").click();
     await fill(a, "arrive", "2027-01-22T01:30");
     await save(a);
@@ -254,7 +261,6 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
       await fill(a, k, "");
     await save(a);
     await expect(flightRows).toHaveCount(0);
-    await click(a, "編輯行程");
     for (const name of ["A景點", "B景點"]) {
       await click(a, "新增行程");
       await fill(a, "name", name);

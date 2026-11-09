@@ -342,34 +342,24 @@ function scheduledItems() {
     if (!f || !Object.values(f).some(Boolean)) continue;
     const name = [label + "航班", f.number].filter(Boolean).join(" ");
     const route = [f.from, f.to].filter(Boolean).join(" → ");
-    const stops = [
-      [f.depart, "起飛", f.from],
-      [f.arrive, "抵達", f.to],
-    ].filter(([when]) => when);
-    if (!stops.length) {
-      const date = leg === "outbound" ? trip.data.start : trip.data.end;
+    const departDate = f.depart?.split("T")[0];
+    const arriveDate = f.arrive?.split("T")[0];
+    const dates = [...new Set([departDate, arriveDate].filter(Boolean))];
+    if (!dates.length)
+      dates.push(leg === "outbound" ? trip.data.start : trip.data.end);
+    for (const date of dates) {
+      const departure = date === departDate;
+      const arrival = date === arriveDate;
+      const event =
+        departure && !arrival ? "起飛" : arrival && !departure ? "抵達" : "";
       items.push({
         leg,
+        flight: f,
         data: {
           date,
-          name,
+          name: event ? name + " · " + event : name,
+          time: (departure ? f.depart : f.arrive)?.split("T")[1],
           place: route,
-          transport: "飛機",
-          notes: "起降時間待填",
-        },
-      });
-    }
-    for (const [when, event, airport] of stops) {
-      const [date, time] = when.split("T");
-      items.push({
-        leg,
-        data: {
-          date,
-          time,
-          name: name + " · " + event,
-          place: airport,
-          transport: "飛機",
-          notes: "機場當地時間",
         },
       });
     }
@@ -464,6 +454,16 @@ function home() {
 const byTime = (a, b) =>
   (a.data.time || "24").localeCompare(b.data.time || "24") ||
   Number(a.data.order || 0) - Number(b.data.order || 0);
+function flightRow(row) {
+  const { flight, data, leg } = row;
+  const endpoint = (airport, when, label) => {
+    const [date, time] = (when || "").split("T");
+    const clock =
+      date && date !== data.date ? date.slice(5) + " " + time : time;
+    return `<span class="itinerary-stop"><small>${label}</small><strong>${esc(airport || "—")}</strong><span>${esc(clock || "待填")}</span></span>`;
+  };
+  return `<tr class="itinerary-flight"><td colspan="4"><div class="flight-strip"><div class="flight-identity"><small aria-hidden="true">✈︎</small><b>${esc(data.name)}</b></div><div class="strip-route">${endpoint(flight.from, flight.depart, "起飛")}<span aria-hidden="true">→</span>${endpoint(flight.to, flight.arrive, "抵達")}</div><div class="flight-foot"><small>機場當地時間</small>${editMode ? btn("編輯航班", "flight", leg) : ""}</div></div></td></tr>`;
+}
 function itinerary() {
   const items = scheduledItems(),
     d = trip.data,
@@ -489,6 +489,7 @@ function itinerary() {
             .filter((r) => r.data.date === date)
             .sort(byTime)
             .map((r) => {
+              if (r.leg) return flightRow(r);
               const x = r.data;
               return (
                 "<tr><td>" +
@@ -506,9 +507,8 @@ function itinerary() {
                 "</td><td>" +
                 esc(x.notes) +
                 "<div>" +
-                (r.leg
-                  ? btn("編輯航班", "flight", r.leg)
-                  : btn("移動", "move", r.id) + (editMode ? controls(r) : "")) +
+                btn("移動", "move", r.id) +
+                (editMode ? controls(r) : "") +
                 "</div></td></tr>"
               );
             })
