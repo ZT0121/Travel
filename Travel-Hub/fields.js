@@ -25,8 +25,8 @@ export function fields(table, currency) {
       ["start", "出發日期", "date", true],
       ["end", "回程日期", "date", true],
       ["currency", "目的地幣別", "text", true],
-      ["hotel", "住宿名稱"],
-      ["hotelAddress", "飯店地址"],
+      ["hotel", "住宿名稱", "textarea"],
+      ["hotelAddress", "飯店地址", "textarea"],
     ],
     itinerary_items: [
       date,
@@ -116,4 +116,11 @@ export function overlaps(a, b) {
     (a.time === b.time ||
       (a.time < (b.endTime || b.time) && b.time < (a.endTime || a.time)))
   );
+}
+
+
+export function hotelLines(value) {
+  if (value.includes("\n")) return value;
+  // Older single-line entries commonly contain English followed by Korean.
+  return value.replace(/(\p{Script=Latin}[^\p{Script=Hangul}]*?)\s*(?=\p{Script=Hangul})/u, "$1\n");
 }
