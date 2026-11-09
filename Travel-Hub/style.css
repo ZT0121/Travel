@@ -54,12 +54,7 @@ header {
   position: sticky;
   top: 0;
   z-index: 30;
-  background: linear-gradient(
-    to bottom,
-    rgba(240, 235, 228, 0.96),
-    rgba(240, 235, 228, 0.72)
-  );
-  backdrop-filter: blur(10px);
+  background: var(--bg);
   border-bottom: 1px solid var(--line);
   padding: calc(14px + var(--safeT)) 16px 12px;
 }
@@ -113,12 +108,7 @@ nav {
   bottom: 0;
   z-index: 40;
   padding: 10px 12px calc(10px + var(--safeB));
-  background: linear-gradient(
-    to top,
-    rgba(240, 235, 228, 0.98),
-    rgba(240, 235, 228, 0.7)
-  );
-  backdrop-filter: blur(10px);
+  background: var(--bg);
   border-top: 1px solid var(--line);
 }
 .nav-inner {
@@ -145,9 +135,10 @@ nav button {
   box-shadow: 0 8px 20px rgba(102, 95, 89, 0.07);
 }
 nav button.active {
-  border-color: var(--brand2);
-  background: var(--brand2);
-  color: #fff;
+  border-color: var(--line);
+  background: var(--leaf);
+  color: var(--ink);
+  box-shadow: none;
   font-weight: 600;
 }
 label {
@@ -492,7 +483,7 @@ pre {
 }
 
 .trip-cover {
-  background: linear-gradient(110deg, var(--leaf) 45%, color-mix(in srgb, var(--tint) 48%, var(--leaf)));
+  background: var(--leaf);
   border-inline-start: 5px solid var(--tint);
   padding: clamp(18px, 3vw, 30px);
 }
@@ -595,9 +586,4 @@ td:first-child {
 }
 aside {
   color: var(--ink);
-}
-nav button.active {
-  background: var(--tint);
-  color: var(--ink);
-  border-color: var(--brand);
 }
