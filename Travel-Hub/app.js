@@ -499,8 +499,8 @@ function itinerary() {
           esc(date) +
           '</summary><div class="table"><table class="itinTable"><thead><tr><th>時間</th><th>行程</th><th>交通</th><th>備註</th></tr></thead><tbody>' +
           (date === d.start
-            ? homeRow("從家裡出發")
-            : lodgingRow(d, "從住宿出發")) +
+            ? homeRow("從 家裡 出發")
+            : lodgingRow(d, "從 住宿 出發")) +
           (items
             .filter((r) => r.data.date === date)
             .sort(byTime)
@@ -529,7 +529,7 @@ function itinerary() {
               );
             })
             .join("") || '<tr><td colspan="4">尚無行程</td></tr>') +
-          (date === d.end ? homeRow("開心回家～") : lodgingRow(d, "返回住宿")) +
+          (date === d.end ? homeRow("Home Sweet Home") : lodgingRow(d, "返回 住宿")) +
           "</tbody></table></div></details>",
       )
       .join("")
