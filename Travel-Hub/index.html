@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#F0EBE4" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icon-192.png" />
+    <link rel="stylesheet" href="./style.css" />
+    <title>Travel Hub｜家庭旅行手帳</title>
+  </head>
+  <body>
+    <header>
+      <div class="title">
+        <div><b>Travel Hub</b><small class="sub">家庭旅行手帳</small></div>
+        <button id="account">帳號</button>
+      </div>
+    </header>
+    <main>
+      <section id="top"></section>
+      <nav aria-label="功能選單"><div class="nav-inner" id="nav"></div></nav>
+      <section id="page"></section>
+      <aside id="sync" aria-live="polite"></aside>
+    </main>
+    <dialog id="dialog"></dialog>
+    <div id="toast" role="status"></div>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
