@@ -8,7 +8,7 @@ export const labels = {
   fx: "匯率",
   trips: "旅行",
 };
-export const people = ["我", "先生", "Hunter", "Angus", "共用"];
+export const people = ["阿庭", "肥儒", "阿比", "憨憨", "共用"];
 export const categories = ["餐飲", "交通", "住宿", "購物", "娛樂", "其他"];
 // Field definitions also drive native mobile date, camera and time controls.
 export function fields(table, currency) {
