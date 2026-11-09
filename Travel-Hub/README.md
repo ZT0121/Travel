@@ -1,15 +1,23 @@
 # Travel Hub V1.0
 
-手機優先的家庭旅行手帳。每個共用帳號第一次登入會建立 Seoul 2027，日期為 2027/01/21–01/25，使用 Asia/Seoul 與 KRW。兩支裝置登入同一個帳號即可共用資料。住宿、交通及私人清單由使用者登入後填寫。
+手機優先的家庭旅行手帳。每個家庭第一次登入會建立 Seoul 2027，日期為 2027/01/21–01/25，使用 Asia/Seoul 與 KRW。兩人各自登入後，可共同編輯同一家庭的旅行。住宿、交通及私人清單由使用者登入後填寫。
 
 ## 第一次設定
 
 1. 建立專用的 Supabase 專案。在 **SQL Editor** 執行本目錄的 [schema.sql](./schema.sql) 一次。此腳本會建立六張旅遊資料表、圖片清理佇列、私有圖片 bucket、帳號隔離政策及 Realtime publication 訂閱。
-2. 在 **Authentication → Users** 建立並確認一組電子郵件與密碼，供兩人登入。可關閉公開註冊。帳號應允許多台裝置同時登入。
-3. 從專案的 Connect／API Keys 取得 **Project URL** 及 **Publishable key**（以 `sb_publishable_` 開頭）。兩支手機首次開啟 Travel Hub 時按「設定 Supabase」，各自輸入相同網址與公開金鑰，然後登入。密碼只需在登入畫面輸入。
+2. 執行 [households.sql](./households.sql) 一次以啟用家庭權限。在 Authentication → Users 建立兩個個人帳號。管理者於 SQL Editor 執行以下 SQL，將兩個範例 UUID 替換為確認屬於家庭成員的 Auth User ID。
+
+   ```sql
+   with family as (insert into public.hub_households default values returning id)
+   insert into public.hub_members(user_id, household_id)
+   select member, family.id from family cross join
+     unnest(array['第一位使用者 UUID','第二位使用者 UUID']::uuid[]) as member;
+   ```
+
+3. 此版本預設連接 ZT 的 Travel Hub 專案，開啟後選「登入」，各自使用自己的電子郵件與密碼。家庭成員不能從前端自行加入或邀請。若部署到另一專案，可在登入畫面選「更換專案」輸入其 URL 與 publishable key。
 4. Android Chrome 開啟此網站後，從瀏覽器選單安裝或加入主畫面。初次登入、下載資料及安裝快取時需連網。若沿用此 repo 的 GitHub Pages 根目錄發布，合併並完成 Pages 部署後，新版路徑為 `/Travel/Travel-Hub/`。
 
-專案與公開金鑰存在各裝置的網站儲存空間，無需編輯原始碼。Supabase 的資料 API 需啟用並包含 public schema。六張主表均採 UUID、owner_id、版本、建立及更新時間，子資料以複合外鍵驗證旅行與帳號。圖片路徑以帳號 UUID 開頭，Supabase Storage 以登入者身分驗證下載。刪除以版本化刪除標記通知離線裝置。商品移除或更換照片後，圖片清理工作會在同步時執行。
+專案與公開金鑰存在各裝置的網站儲存空間，無需編輯原始碼。Supabase 的資料 API 需啟用並包含 public schema。六張主表均採 UUID、owner_id、版本、建立及更新時間，子資料以複合外鍵驗證旅行與家庭。圖片路徑以家庭 UUID 開頭，Supabase Storage 以登入者身分驗證下載。刪除以版本化刪除標記通知離線裝置。商品移除或更換照片後，圖片清理工作會在同步時執行。
 
 ## 旅行途中
 

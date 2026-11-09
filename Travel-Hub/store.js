@@ -28,8 +28,15 @@ function request(req) {
     req.onerror = () => reject(req.error);
   });
 }
-export async function openStore(scope, owner, client) {
-  const open = indexedDB.open("travel-hub:" + scope + ":" + owner, 1);
+export async function openStore(scope, owner, client, userId) {
+  const open = indexedDB.open(
+    "travel-hub:" +
+      scope +
+      ":" +
+      userId +
+      (owner === userId ? "" : ":" + owner),
+    1,
+  );
   open.onupgradeneeded = () => {
     for (const name of ["rows", "images"])
       open.result.createObjectStore(name, { keyPath: "id" });
@@ -54,6 +61,7 @@ export async function openStore(scope, owner, client) {
     read,
     write,
     owner,
+    userId,
     status: "待同步",
     error: "",
     onchange: () => {},

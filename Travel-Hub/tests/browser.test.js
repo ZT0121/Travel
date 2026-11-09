@@ -16,13 +16,14 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
   const images = new Map(),
     owner = crypto.randomUUID(),
     exp = Math.floor(Date.now() / 1000) + 3600;
-  const token = [
-    { alg: "HS256", typ: "JWT" },
-    { sub: owner, exp, role: "authenticated", iat: exp - 3600 },
-    "sig",
-  ]
-    .map((v) => Buffer.from(JSON.stringify(v)).toString("base64url"))
-    .join(".");
+  const tokenFor = (owner) =>
+    [
+      { alg: "HS256", typ: "JWT" },
+      { sub: owner, exp, role: "authenticated", iat: exp - 3600 },
+      "sig",
+    ]
+      .map((v) => Buffer.from(JSON.stringify(v)).toString("base64url"))
+      .join(".");
   const server = createServer(async (req, res) => {
     try {
       const url = new URL(req.url, "http://localhost"),
@@ -55,6 +56,7 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
         res.setHeader("content-type", "image/jpeg");
         return res.end(images.get(parts));
       }
+      if (path === "/rest/v1/rpc/hub_household_id") return json(owner);
       if (path.startsWith("/rest/v1/")) {
         if (path.endsWith("/hub_removed_images")) return json([]);
         const table = db.get(path.split("/").pop()),
@@ -112,7 +114,7 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
         }
         if (path.endsWith("/expenses") && loseFirstExpenseResponse) {
           loseFirstExpenseResponse = false;
-          return json({message:"Lost write acknowledgement"},503);
+          return json({ message: "Lost write acknowledgement" }, 503);
         }
         return json([row]);
       }
@@ -152,6 +154,7 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
     );
     const devices = [];
     for (let i = 0; i < 2; i++) {
+      const userId = crypto.randomUUID();
       const ctx = await browser.newContext({
         viewport: { width: 390, height: 844 },
       });
@@ -173,7 +176,7 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
             }),
           );
         },
-        { origin, owner, token, exp },
+        { origin, owner: userId, token: tokenFor(userId), exp },
       );
       await ctx.routeWebSocket("**/realtime/v1/websocket**", (ws) => {
         let subscription;
@@ -362,13 +365,11 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
       },
     ]) {
       await click(a, "匯入 JSON");
-      await a
-        .locator("dialog input[type=file]")
-        .setInputFiles({
-          name: "fixture.json",
-          mimeType: "application/json",
-          buffer: Buffer.from(JSON.stringify(payload)),
-        });
+      await a.locator("dialog input[type=file]").setInputFiles({
+        name: "fixture.json",
+        mimeType: "application/json",
+        buffer: Buffer.from(JSON.stringify(payload)),
+      });
       await save(a);
     }
     await expect(a.locator(".entry")).toHaveCount(2);

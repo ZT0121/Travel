@@ -17,12 +17,16 @@ test("PostgreSQL schema enforces ownership, parent ownership and compare-and-swa
     await db.exec(
       await readFile(new URL("../schema.sql", import.meta.url), "utf8"),
     );
+    await db.exec(
+      await readFile(new URL("../households.sql", import.meta.url), "utf8"),
+    );
+    const partner = crypto.randomUUID();
     const a = crypto.randomUUID(),
       b = crypto.randomUUID(),
       trip = crypto.randomUUID(),
       op = crypto.randomUUID();
     await db.exec(
-      `insert into auth.users values ('${a}'),('${b}');set role authenticated;set app.uid='${a}';insert into trips(id,mutation,data) values ('${trip}','${op}','{}');`,
+      `insert into auth.users values ('${a}'),('${b}'),('${partner}');insert into hub_households values ('${a}');insert into hub_members values ('${a}','${a}'),('${partner}','${a}');set role authenticated;set app.uid='${a}';insert into trips(id,mutation,data) values ('${trip}','${op}','{}');`,
     );
     for (const t of tables.slice(1))
       await db.exec(
@@ -43,6 +47,9 @@ test("PostgreSQL schema enforces ownership, parent ownership and compare-and-swa
       ).rows.length,
       0,
     );
+    await db.exec(`set app.uid='${partner}'`);
+    for (const t of [...tables, "storage.objects"])
+      assert.equal((await db.query("select * from " + t)).rows.length, 1);
     await db.exec(`set app.uid='${b}'`);
     for (const t of [...tables, "storage.objects"])
       assert.equal((await db.query("select * from " + t)).rows.length, 0);

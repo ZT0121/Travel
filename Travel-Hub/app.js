@@ -24,7 +24,10 @@ const btn = (caption, action, id = "", cls = "") =>
   `<button type="button" class="${cls}" data-act="${action}" data-id="${esc(id)}">${esc(caption)}</button>`;
 const sel = (key, choices, value, all = "") =>
   `<select aria-label="${esc(all || key)}" data-filter="${key}">${(all ? ["", ...choices] : choices).map((v) => `<option value="${esc(v)}" ${value === v ? "selected" : ""}>${esc(v || all)}</option>`).join("")}</select>`;
-let cfg = JSON.parse(localStorage.getItem("hub-project") || "null"),
+let cfg = JSON.parse(localStorage.getItem("hub-project") || "null") ?? {
+    url: "https://wxleinjxefdtctqxvvfg.supabase.co",
+    publicKey: "sb_publishable_2-OgtNn0xJiKOkAM85G3lw_xtvg9pWJ",
+  },
   client,
   store,
   rows = [],
@@ -44,7 +47,7 @@ const message = (s) => {
     timer = setTimeout(() => (el.textContent = ""), 6500);
   }
 };
-const key = (k) => "hub:" + cfg.url + ":" + store.owner + ":" + k;
+const key = (k) => "hub:" + cfg.url + ":" + store.userId + ":" + k;
 function modal(title, html, submit) {
   if (dlg.open) dlg.close();
   dlg.innerHTML =
@@ -87,10 +90,10 @@ function inputs(defs, values) {
 }
 function setup() {
   $("#top").innerHTML =
-    '<div class="hero"><small>TRAVEL HUB</small><h1>家庭旅行手帳</h1><p>登入共用帳號，開啟兩人的旅行。</p></div>';
+    '<div class="hero"><small>TRAVEL HUB</small><h1>家庭旅行手帳</h1><p>登入個人帳號，開啟兩人的旅行。</p></div>';
   $("#page").innerHTML =
     '<div class="card"><h2>' +
-    (cfg ? "共用帳號登入" : "連接旅行資料庫") +
+    (cfg ? "個人帳號登入" : "連接旅行資料庫") +
     "</h2>" +
     btn(cfg ? "登入" : "設定 Supabase", "account") +
     "</div>";
@@ -98,7 +101,7 @@ function setup() {
 function account() {
   if (store) {
     modal(
-      "共用帳號",
+      "個人帳號",
       "<p>此裝置的預設記帳人：" +
         esc(localStorage.getItem(key("person")) || "我") +
         "</p>" +
@@ -136,7 +139,7 @@ function account() {
     return;
   }
   modal(
-    "登入共用帳號",
+    "登入個人帳號",
     inputs(
       [
         ["email", "電子郵件", "email", true],
@@ -153,10 +156,23 @@ function account() {
     },
   );
 }
-async function enter(owner) {
+async function enter(userId) {
   if (store) return;
-  store = await openStore(cfg.url, owner, client);
-  localStorage.setItem("hub-last-owner", owner);
+  const cacheKey = "hub-family:" + cfg.url + ":" + userId;
+  let owner = localStorage.getItem(cacheKey);
+  if (navigator.onLine) {
+    const { data, error } = await client.rpc("hub_household_id");
+    if (error) throw error;
+    if (!data) {
+      localStorage.removeItem(cacheKey);
+      throw Error("此帳號尚未加入家庭，請聯絡專案管理者。");
+    }
+    owner = data;
+    localStorage.setItem(cacheKey, owner);
+  }
+  if (!owner) throw Error("首次登入需要網路連線。");
+  store = await openStore(cfg.url, owner, client, userId);
+  localStorage.setItem("hub-last-owner", userId);
   const id = await stableId(owner + ":Seoul2027");
   store.onchange = () => refresh().catch((e) => message(e.message));
   if (!(await store.all()).length) {
@@ -857,7 +873,7 @@ async function action(a, id) {
   if (a === "account") return account();
   if (a === "close") return dlg.close();
   if (a === "reset") {
-    localStorage.removeItem("hub-project");
+    localStorage.setItem("hub-project", "false");
     location.reload();
     return;
   }
@@ -1107,7 +1123,7 @@ async function init() {
   client.auth.onAuthStateChange((event, session) => {
     if (
       store &&
-      (event === "SIGNED_OUT" || (session && session.user.id !== store.owner))
+      (event === "SIGNED_OUT" || (session && session.user.id !== store.userId))
     ) {
       localStorage.removeItem("hub-last-owner");
       location.reload();
