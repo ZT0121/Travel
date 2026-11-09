@@ -25,3 +25,11 @@ test("目的地日期、重疊時段、匯率與安全導航", async () => {
   assert.equal(safeMap("javascript:alert(1)"), "");
   assert.equal(await stableId("a"), await stableId("a"));
 });
+
+test("hotel cards preserve manual lines and separate existing English/Korean text", async () => {
+  const {hotelLines} = await import("../fields.js");
+  assert.equal(hotelLines("Sample House 호텔"), "Sample House\n호텔");
+  assert.equal(hotelLines("156, Road 1 서울 156"), "156, Road 1\n서울 156");
+  assert.equal(hotelLines("Sample\nHouse 호텔"), "Sample\nHouse 호텔");
+  assert.equal(hotelLines("서울 156"), "서울 156");
+});

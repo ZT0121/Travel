@@ -3,6 +3,7 @@ import { openStore, uid, stableId, tables } from "./store.js";
 import {
   fields,
   labels,
+  hotelLines,
   people,
   localDate,
   days,
@@ -393,7 +394,7 @@ function home() {
           '<div class="card"><small>' +
           k +
           "</small><h3>" +
-          esc(v) +
+          (k === "住宿" || k === "飯店地址" ? esc(hotelLines(v)).replaceAll("\n", "<br>") : esc(v)) +
           "</h3>" +
           (k === "打包進度" ? packingProgress(done, pack.length) : "") +
           "</div>",
