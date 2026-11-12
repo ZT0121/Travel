@@ -1,3 +1,8 @@
+import {
+  preparationStages,
+  currentStage,
+  duePreparation,
+} from "./preparation.js";
 import { createClient } from "./supabase.js";
 import { openStore, uid, stableId, tables } from "./store.js";
 import {
@@ -379,6 +384,107 @@ function scheduledItems() {
   }
   return items;
 }
+function preparationTask(task, showStage = false, editable = false) {
+  const stage = preparationStages.find((stage) => stage.id === task.stage);
+  return `<div class="preparation-task"><label class="task-check"><input type="checkbox" data-task="${esc(task.id)}" ${task.done ? "checked" : ""}><span>${esc(task.name)}</span></label>${showStage ? `<small>${esc(stage?.label)}</small>` : ""}${editable ? `<div class="task-actions">${btn("編輯", "taskEdit", task.id, "text-button")}${btn("刪除", "taskDelete", task.id, "text-button")}</div>` : ""}</div>`;
+}
+function packingPreparation() {
+  const items = live("packing_items"),
+    done = items.filter((item) => item.data.done).length;
+  return `<div class="preparation-packing"><div class="section-heading"><span>行李打包</span>${btn("開啟行李清單", "nav", "packing_items", "text-button")}</div><small>${items.length ? done + " / " + items.length + " 項已打包" : "尚未建立行李清單"}</small>${items.length ? packingProgress(done, items.length) : ""}</div>`;
+}
+function preparationSummary() {
+  const d = trip.data,
+    stage = preparationStages[currentStage(d)];
+  const tasks = duePreparation(d);
+  const currentTasks = (d.preparation || []).filter(
+    (task) => task.stage === stage.id,
+  );
+  const completed = currentTasks.filter((task) => task.done).length;
+  return `<section class="card preparation-summary" aria-label="行前準備"><div class="section-heading"><h2>行前準備</h2>${btn("查看全部待辦", "nav", "preparation", "text-button")}</div><div class="preparation-stage"><b>${stage.label}</b><small>${currentTasks.length ? "本階段完成 " + completed + " / " + currentTasks.length : "本階段尚未新增待辦"}</small></div>${
+    tasks.length
+      ? tasks
+          .slice(0, 3)
+          .map((task) => preparationTask(task, true))
+          .join("")
+      : '<p class="muted">目前沒有待完成事項。</p>'
+  }${tasks.length > 3 ? '<p class="muted">另有 ' + (tasks.length - 3) + " 項待辦，可在全部待辦查看。</p>" : ""}${currentStage(d) >= 2 ? packingPreparation() : ""}</section>`;
+}
+function allPreparation() {
+  const tasks = trip.data.preparation || [];
+  const current = currentStage(trip.data);
+  return (
+    `<div class="tools">${btn("返回首頁", "nav", "home", "text-button")}</div>` +
+    preparationStages
+      .map((stage, index) => {
+        const entries = tasks.filter((task) => task.stage === stage.id);
+        const done = entries.filter((task) => task.done).length;
+        return `<section class="card preparation-group" aria-label="${stage.label}"><div class="section-heading"><h3>${stage.label}${index === current ? " <small>目前階段</small>" : ""}</h3>${btn("新增待辦", "taskAdd", stage.id, "text-button")}</div><small>${entries.length ? "完成 " + done + " / " + entries.length : "尚未新增待辦"}</small>${entries.map((task) => preparationTask(task, false, true)).join("")}${stage.id === "week" ? packingPreparation() : ""}</section>`;
+      })
+      .join("")
+  );
+}
+function editPreparation(id, stage) {
+  const target = trip;
+  const task = (target.data.preparation || []).find((task) => task.id === id);
+  const values = { name: task?.name || "", stage: task?.stage || stage };
+  const stageField =
+    '<label>階段<select name="stage">' +
+    preparationStages
+      .map(
+        (stage) =>
+          `<option value="${stage.id}" ${stage.id === values.stage ? "selected" : ""}>${stage.label}</option>`,
+      )
+      .join("") +
+    "</select></label>";
+  modal(
+    task ? "編輯待辦" : "新增待辦",
+    inputs([["name", "待辦事項", "text", true]], values) + stageField,
+    async (form) => {
+      const name = String(form.get("name") || "").trim();
+      if (!name) throw Error("請填寫待辦事項");
+      const next = {
+        ...task,
+        id: task?.id || uid(),
+        name,
+        stage: String(form.get("stage")),
+        done: task?.done || false,
+      };
+      const tasks = [...(target.data.preparation || [])];
+      const index = tasks.findIndex((item) => item.id === next.id);
+      if (index < 0) tasks.push(next);
+      else tasks[index] = next;
+      await store.save(
+        "trips",
+        target.id,
+        null,
+        { ...target.data, preparation: tasks },
+        false,
+        target.stamp,
+      );
+    },
+  );
+}
+async function changePreparation(id, remove = false) {
+  const target = trip;
+  const tasks = target.data.preparation || [];
+  const task = tasks.find((task) => task.id === id);
+  if (!task) return;
+  if (remove && !confirm("刪除「" + task.name + "」？")) return;
+  const next = remove
+    ? tasks.filter((task) => task.id !== id)
+    : tasks.map((task) =>
+        task.id === id ? { ...task, done: !task.done } : task,
+      );
+  await store.save(
+    "trips",
+    target.id,
+    null,
+    { ...target.data, preparation: next },
+    false,
+    target.stamp,
+  );
+}
 function home() {
   const d = trip.data,
     today = localDate(d.timezone),
@@ -417,7 +523,7 @@ function home() {
           ],
         ];
   const accommodation = `<section class="card accommodation"><div class="section-heading"><h2>住宿</h2>${btn("編輯住宿", "edit", trip.id, "text-button")}</div><h3>${esc(hotelLines(d.hotel || "尚未填寫住宿")).replaceAll("\n", "<br>")}</h3><small>飯店地址</small><p class="hotel-address">${esc(hotelLines(d.hotelAddress || "尚未填寫")).replaceAll("\n", "<br>")}</p>${mapLink({ address: d.hotelAddress, place: d.hotel })}</section>`;
-  const preparation = `<div class="packing-summary"><div><span>打包進度</span><span>${done} / ${pack.length}</span></div>${packingProgress(done, pack.length)}</div>`;
+
   return (
     '<div class="card trip-cover"><small>' +
     esc(title) +
@@ -449,7 +555,7 @@ function home() {
     flightTickets(d) +
     accommodation +
     "</div>" +
-    (before ? preparation : "") +
+    preparationSummary() +
     '<div class="tools home-actions">' +
     btn("完整行程", "nav", "itinerary_items", "primary") +
     btn("快速記帳", "expense") +
@@ -766,13 +872,15 @@ function render() {
       : view === "home"
         ? home()
         : "<h2>" +
-          labels[view] +
+          (view === "preparation" ? "全部待辦" : labels[view]) +
           "</h2>" +
-          (view === "itinerary_items"
-            ? itinerary()
-            : view === "fx"
-              ? fx()
-              : list());
+          (view === "preparation"
+            ? allPreparation()
+            : view === "itinerary_items"
+              ? itinerary()
+              : view === "fx"
+                ? fx()
+                : list());
   for (const img of document.querySelectorAll(".thumb"))
     loadPhoto(find(img.dataset.id).data.image)
       .then((url) => {
@@ -1009,6 +1117,9 @@ async function action(a, id) {
     return;
   }
   if (a === "flight" && Object.hasOwn(flightLegs, id)) return editFlight(id);
+  if (a === "taskAdd") return editPreparation(null, id);
+  if (a === "taskEdit") return editPreparation(id);
+  if (a === "taskDelete") return changePreparation(id, true);
   if (a === "nav") return go(id);
   if (a === "choose") return choose(id);
   if (a === "mode") {
@@ -1194,6 +1305,19 @@ document.addEventListener("click", (e) => {
     );
 });
 document.addEventListener("change", (e) => {
+  if (e.target.dataset.task) {
+    const input = e.target;
+    input.disabled = true;
+    changePreparation(input.dataset.task)
+      .catch((err) => {
+        input.checked = !input.checked;
+        message(err.message);
+      })
+      .finally(() => {
+        input.disabled = false;
+      });
+    return;
+  }
   const k = e.target.dataset.filter;
   if (k === "trip") choose(e.target.value);
   else if (k) {

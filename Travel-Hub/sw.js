@@ -1,11 +1,12 @@
 const prefix = "travel-hub:" + self.registration.scope + ":";
-const cacheName = prefix + "v1-22";
+const cacheName = prefix + "v1-23";
 const shell = [
   "./",
   "./index.html",
   "./app.js",
   "./store.js",
   "./fields.js",
+  "./preparation.js",
   "./style.css",
   "./fonts/SarasaMonoTC-Regular.woff2",
   "./fonts/SarasaMonoTC-SemiBold.woff2",

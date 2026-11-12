@@ -1051,8 +1051,94 @@ body {
   }
 }
 
-@media(max-width:640px){
- table.itinTable, table.itinTable tbody {display:block;width:100%;table-layout:auto}
- table.itinTable colgroup {display:none}
- table.itinTable tbody tr.lodging-row > td {width:100%}
+@media (max-width: 640px) {
+  table.itinTable,
+  table.itinTable tbody {
+    display: block;
+    width: 100%;
+    table-layout: auto;
+  }
+  table.itinTable colgroup {
+    display: none;
+  }
+  table.itinTable tbody tr.lodging-row > td {
+    width: 100%;
+  }
+}
+
+.preparation-summary {
+  margin-top: 24px;
+  padding: 18px 20px;
+}
+.preparation-summary h2 {
+  font-size: 15px !important;
+}
+.preparation-stage {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.preparation-task {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.preparation-task:last-child {
+  border-bottom: 0;
+}
+.task-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 150px;
+  margin: 0;
+  min-height: 44px;
+  color: var(--ink);
+  font-size: 14px;
+  cursor: pointer;
+}
+.task-check input {
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  flex: none;
+  accent-color: var(--brand);
+}
+.task-check span {
+  overflow-wrap: anywhere;
+}
+.task-check input:checked + span {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+.task-actions {
+  display: flex;
+  gap: 4px;
+}
+.task-actions button {
+  font-size: 12px;
+}
+.preparation-group {
+  padding: 18px 20px;
+}
+.preparation-group .section-heading h3 {
+  margin: 0;
+}
+.preparation-packing {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+.preparation-packing .section-heading {
+  margin: 0;
+}
+.preparation-packing progress {
+  margin-top: 8px;
+  height: 5px;
 }

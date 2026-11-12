@@ -226,6 +226,40 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
       await expect(p.locator("#sync")).toContainText("已同步");
     };
     const fill = (p, k, v) => p.locator('dialog [name="' + k + '"]').fill(v);
+    await expect(a.locator(".preparation-summary")).toContainText("現在開始");
+    await expect(
+      a.locator(".preparation-summary .packing-progress"),
+    ).toHaveCount(0);
+    await click(a, "查看全部待辦");
+    await a
+      .getByRole("region", { name: "現在開始", exact: true })
+      .getByRole("button", { name: "新增待辦" })
+      .click();
+    await fill(a, "name", "確認證件");
+    await save(a);
+    await nav(a, "首頁");
+    await expect(b.locator(".preparation-summary")).toContainText("確認證件");
+    await a.getByRole("checkbox", { name: "確認證件" }).check();
+    await expect(b.locator(".preparation-summary")).not.toContainText(
+      "確認證件",
+    );
+    await click(b, "查看全部待辦");
+    await expect(b.getByRole("checkbox", { name: "確認證件" })).toBeChecked();
+    await b.context().setOffline(true);
+    await b
+      .getByRole("region", { name: "出發前一個月", exact: true })
+      .getByRole("button", { name: "新增待辦" })
+      .click();
+    await fill(b, "name", "處理網路");
+    await save(b);
+    await b.reload();
+    await click(b, "查看全部待辦");
+    await expect(b.getByRole("checkbox", { name: "處理網路" })).toBeVisible();
+    await b.context().setOffline(false);
+    await sync(b);
+    await click(a, "查看全部待辦");
+    await expect(a.getByRole("checkbox", { name: "處理網路" })).toBeVisible();
+    await nav(b, "首頁");
     await nav(a, "行程");
     await expect(a.locator(".lodging-row")).toHaveText([
       "從 家裡 出發",
@@ -422,6 +456,8 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
       .filter({ hasText: "第二趟" })
       .getByText("開啟")
       .click();
+    await click(a, "查看全部待辦");
+    await expect(a.getByRole("checkbox", { name: "確認證件" })).toHaveCount(0);
     await nav(a, "記帳");
     await expect(a.locator(".entry")).toHaveCount(0);
     for (const payload of [
