@@ -529,8 +529,9 @@ function itinerary() {
                 "</td><td>" +
                 esc(x.notes) +
                 "<div>" +
-                btn("移動", "move", r.id) +
-                (editingDate === date ? controls(r) : "") +
+                (editingDate === date
+                  ? btn("移動", "move", r.id) + controls(r)
+                  : "") +
                 "</div></td></tr>"
               );
             })
