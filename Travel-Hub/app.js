@@ -35,7 +35,7 @@ let cfg = JSON.parse(localStorage.getItem("hub-project") || "null") ?? {
   trip,
   view = "home",
   filter = {},
-  editMode = false,
+  editingDate = null,
   undo = null,
   refreshCount = 0;
 let channel, timer;
@@ -462,7 +462,7 @@ function flightRow(row) {
       date && date !== data.date ? date.slice(5) + " " + time : time;
     return `<span class="itinerary-stop"><small>${label}</small><strong>${esc(airport || "—")}</strong><span>${esc(clock || "待填")}</span></span>`;
   };
-  return `<tr class="itinerary-flight"><td colspan="4"><div class="flight-strip"><div class="flight-identity"><small aria-hidden="true">✈︎</small><b>${esc(data.name)}</b></div><div class="strip-route">${endpoint(flight.from, flight.depart, "起飛")}<span aria-hidden="true">→</span>${endpoint(flight.to, flight.arrive, "抵達")}</div><div class="flight-foot"><small>機場當地時間</small>${editMode ? btn("編輯航班", "flight", leg) : ""}</div></div></td></tr>`;
+  return `<tr class="itinerary-flight"><td colspan="4"><div class="flight-strip"><div class="flight-identity"><small aria-hidden="true">✈︎</small><b>${esc(data.name)}</b></div><div class="strip-route">${endpoint(flight.from, flight.depart, "起飛")}<span aria-hidden="true">→</span>${endpoint(flight.to, flight.arrive, "抵達")}</div><div class="flight-foot"><small>機場當地時間</small>${editingDate === data.date ? btn("編輯航班", "flight", leg) : ""}</div></div></td></tr>`;
 }
 function homeRow(label) {
   return `<tr class="lodging-row"><td colspan="4"><div class="lodging-stop"><b>${label}</b></div></td></tr>`;
@@ -485,19 +485,25 @@ function itinerary() {
     dates.add(dayDate(d.start, i));
   return (
     '<div class="tools">' +
-    btn(editMode ? "完成編輯" : "編輯行程", "mode") +
-    (editMode ? btn("新增行程", "add") + btn("匯入釜山 HTML", "html") : "") +
     (undo && undo.trip === trip.id ? btn("復原移動", "undo") : "") +
     "</div>" +
     [...dates]
       .sort()
       .map(
         (date) =>
-          "<details open><summary>Day " +
+          "<details open><summary><span>Day " +
           (days(d.start, date) + 1) +
           " ｜ " +
           esc(date) +
-          '</summary><div class="table"><table class="itinTable"><thead><tr><th>時間</th><th>行程</th><th>交通</th><th>備註</th></tr></thead><tbody>' +
+          "</span>" +
+          btn(editingDate === date ? "完成編輯" : "編輯這天", "mode", date) +
+          "</summary>" +
+          (editingDate === date
+            ? '<div class="day-tools">' +
+              btn("新增行程", "addDay", date) +
+              "</div>"
+            : "") +
+          '<div class="table"><table class="itinTable"><thead><tr><th>時間</th><th>行程</th><th>交通</th><th>備註</th></tr></thead><tbody>' +
           (date === d.start
             ? homeRow("從 家裡 出發")
             : lodgingRow(d, "從 住宿 出發")) +
@@ -524,12 +530,14 @@ function itinerary() {
                 esc(x.notes) +
                 "<div>" +
                 btn("移動", "move", r.id) +
-                (editMode ? controls(r) : "") +
+                (editingDate === date ? controls(r) : "") +
                 "</div></td></tr>"
               );
             })
             .join("") || '<tr><td colspan="4">尚無行程</td></tr>') +
-          (date === d.end ? homeRow("Home Sweet Home") : lodgingRow(d, "返回 住宿")) +
+          (date === d.end
+            ? homeRow("Home Sweet Home")
+            : lodgingRow(d, "返回 住宿")) +
           "</tbody></table></div></details>",
       )
       .join("")
@@ -888,7 +896,7 @@ function editor(table, r = null, initial = {}, mode = "") {
 function go(page) {
   view = page;
   filter = {};
-  editMode = false;
+  editingDate = null;
   render();
   refresh();
 }
@@ -957,41 +965,6 @@ async function importExpenses(raw, f) {
     await store.save("expenses", r.id, target, r.data, false, existing?.stamp);
   }
 }
-async function importHtml(raw) {
-  const doc = new DOMParser().parseFromString(raw, "text/html"),
-    records = [];
-  for (const table of doc.querySelectorAll("table.itinTable")) {
-    const day = table
-      .closest("details")
-      ?.querySelector("summary")
-      ?.textContent.match(/Day\s*(\d+)/i);
-    if (!day) continue;
-    const date = dayDate(trip.data.start, +day[1] - 1);
-    if (date > trip.data.end) throw Error("目標旅行天數不足");
-    for (const tr of table.querySelectorAll("tbody tr")) {
-      const cells = [...tr.cells].map((c) => c.textContent.trim());
-      if (!cells[1]) continue;
-      const times = cells[0].match(/\d{2}:\d{2}/g) || [];
-      records.push({
-        date,
-        time: times[0] || "",
-        endTime: times[1] || "",
-        name: cells[1],
-        transport: cells[2],
-        notes: cells[3],
-        status: "正式",
-        order: records.length,
-        map: safeMap(tr.querySelector("a")?.getAttribute("href")),
-      });
-    }
-  }
-  if (!records.length) throw Error("找不到釜山每日行程表");
-  for (const data of records) {
-    const id = await stableId(trip.id + JSON.stringify(data));
-    if (!(await store.read("rows", id)))
-      await store.save("itinerary_items", id, trip.id, data);
-  }
-}
 async function action(a, id) {
   const r = find(id),
     d = r?.data;
@@ -1018,10 +991,11 @@ async function action(a, id) {
   if (a === "nav") return go(id);
   if (a === "choose") return choose(id);
   if (a === "mode") {
-    editMode = !editMode;
+    editingDate = editingDate === id ? null : id;
     render();
     return;
   }
+  if (a === "addDay") return editor("itinerary_items", null, { date: id });
   if (a === "retry") return store.sync();
   if (a === "add" || a === "newTrip" || a === "expense")
     return editor(
@@ -1179,13 +1153,6 @@ async function action(a, id) {
           fallback: trip.data.rate,
         }),
     );
-  if (a === "html")
-    return fileForm(
-      "依 Day 順序匯入釜山行程",
-      ".html",
-      importHtml,
-      "<p>Day 1 對應目前旅行的出發日。</p>",
-    );
 }
 function setRate(rate, rateSource, rateAt, target) {
   return store.save(
@@ -1199,6 +1166,7 @@ function setRate(rate, rateSource, rateAt, target) {
 }
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-act],#account");
+  if (b?.dataset.act === "mode") e.preventDefault();
   if (b)
     action(b.dataset.act || "account", b.dataset.id).catch((err) =>
       message(err.message),
