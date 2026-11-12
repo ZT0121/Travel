@@ -1,5 +1,5 @@
 const prefix = "travel-hub:" + self.registration.scope + ":";
-const cacheName = prefix + "v1-19";
+const cacheName = prefix + "v1-20";
 const shell = [
   "./",
   "./index.html",
@@ -11,8 +11,9 @@ const shell = [
   "./fonts/SarasaMonoTC-SemiBold.woff2",
   "./supabase.js",
   "./manifest.webmanifest",
-  "./icon-192.png",
-  "./icon-512.png",
+  "./icon-32.png?v=th1",
+  "./icon-192.png?v=th1",
+  "./icon-512.png?v=th1",
 ];
 self.addEventListener("install", (e) =>
   e.waitUntil(
