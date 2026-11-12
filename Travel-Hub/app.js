@@ -320,7 +320,7 @@ function flightTickets(data) {
     return `<button type="button" class="flight-ticket" data-act="flight" data-id="${leg}" aria-label="${filled ? "編輯" : "填寫"}${label}航班"><span class="ticket-stub"><span aria-hidden="true">✈︎</span>${label}</span><span class="ticket-body">${filled ? `<b>${esc(flight.number || label + "航班")}</b>` : ""}${route}</span></button>`;
   });
   return (
-    '<section class="flights-section" aria-label="航班資訊"><h2>航班資訊</h2><div class="flight-grid">' +
+    '<section class="card flights-section" aria-label="航班資訊"><div class="section-heading"><h2>航班資訊</h2></div><div class="flight-grid">' +
     tickets.join("") +
     "</div></section>"
   );

@@ -1,5 +1,5 @@
 const prefix = "travel-hub:" + self.registration.scope + ":";
-const cacheName = prefix + "v1-21";
+const cacheName = prefix + "v1-22";
 const shell = [
   "./",
   "./index.html",

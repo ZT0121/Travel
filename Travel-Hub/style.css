@@ -868,9 +868,9 @@ button.primary:hover {
 }
 .home-layout {
   display: grid;
-  grid-template-columns: 1.15fr 1fr;
-  gap: 24px;
-  align-items: start;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: stretch;
 }
 .home-layout h2 {
   font-size: 15px !important;
@@ -878,19 +878,25 @@ button.primary:hover {
 }
 .home-layout .flight-grid {
   grid-template-columns: 1fr;
-  margin-bottom: 0;
+  margin: 0;
+  flex: 1;
+  align-content: center;
 }
+.home-layout .flights-section,
 .home-layout .accommodation {
   margin: 0;
   padding: 18px 20px;
   border-radius: 14px;
+  display: flex;
+  flex-direction: column;
 }
 .section-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
+  min-height: 44px;
 }
 .section-heading h2 {
   margin: 0;
@@ -912,6 +918,8 @@ button.primary:hover {
   color: var(--muted);
 }
 .accommodation a {
+  align-self: flex-start;
+  margin-top: auto;
   font-size: 12px;
 }
 .packing-summary {
