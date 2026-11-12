@@ -228,8 +228,8 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
     const fill = (p, k, v) => p.locator('dialog [name="' + k + '"]').fill(v);
     await nav(a, "行程");
     await expect(a.locator(".lodging-row")).toHaveText([
-      "從家裡出發",
-      "開心回家～",
+      "從 家裡 出發",
+      "Home Sweet Home",
     ]);
     await nav(a, "旅行");
     await click(a, "編輯");
@@ -243,14 +243,14 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
       const first = day.locator("tr").first();
       const last = day.locator("tr").last();
       if (index === 0) {
-        await expect(first).toHaveText("從家裡出發");
+        await expect(first).toHaveText("從 家裡 出發");
         await expect(first.getByRole("link")).toHaveCount(0);
-      } else await expect(first).toContainText("從住宿出發");
+      } else await expect(first).toContainText("從 住宿 出發");
       if (index === days.length - 1) {
-        await expect(last).toHaveText("開心回家～");
+        await expect(last).toHaveText("Home Sweet Home");
         await expect(last.getByRole("link")).toHaveCount(0);
       } else {
-        await expect(last).toContainText("返回住宿");
+        await expect(last).toContainText("返回 住宿");
         await expect(last.getByRole("link")).toHaveAttribute(
           "href",
           /Sample%20Road/,
@@ -274,7 +274,7 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
       .filter({ hasText: "TEST123" });
     await expect(flightRows).toHaveCount(1);
     await expect(flightRows.getByText("編輯航班")).toHaveCount(0);
-    await click(a, "編輯行程");
+    await click(a, "編輯這天");
     await flightRows.getByText("編輯航班").click();
     await fill(a, "arrive", "2027-01-21T14:00");
     await save(a);
@@ -294,10 +294,22 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
       await fill(a, k, "");
     await save(a);
     await expect(flightRows).toHaveCount(0);
+    const secondDay = a
+      .locator("details")
+      .filter({ has: a.locator("summary", { hasText: "2027-01-22" }) });
+    await secondDay
+      .getByRole("button", { name: "編輯這天", exact: true })
+      .click();
+    await expect(
+      a.getByRole("button", { name: "新增行程", exact: true }),
+    ).toHaveCount(1);
+    await expect(
+      a.getByRole("button", { name: "匯入釜山 HTML", exact: true }),
+    ).toHaveCount(0);
     for (const name of ["A景點", "B景點"]) {
       await click(a, "新增行程");
       await fill(a, "name", name);
-      await fill(a, "date", "2027-01-22");
+      await expect(a.locator('dialog [name="date"]')).toHaveValue("2027-01-22");
       await fill(a, "address", "範例街");
       await save(a);
     }

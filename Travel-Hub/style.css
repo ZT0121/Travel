@@ -785,3 +785,14 @@ table.itinTable tbody tr.lodging-row > td {
     display: block;
   }
 }
+
+.day-tools {
+  padding: 0 12px 10px;
+}
+summary > span {
+  min-width: 0;
+}
+summary > button {
+  flex-shrink: 0;
+  font-weight: 400;
+}
