@@ -259,8 +259,21 @@ async function refresh() {
           find(o.value).data.name +
           (find(o.value).data.archived ? "（已封存）" : "")),
     );
+  const icons = {
+    home: "⌂",
+    itinerary_items: "≡",
+    saved_places: "♡",
+    shopping_items: "▱",
+    expenses: "＄",
+    packing_items: "▣",
+    fx: "⇄",
+    trips: "⚑",
+  };
   $("#nav").innerHTML = Object.entries(labels)
-    .map(([k, v]) => btn(v, "nav", k, k === view ? "active" : ""))
+    .map(
+      ([k, v]) =>
+        `<button type="button" data-act="nav" data-id="${k}" class="${k === view ? "active" : ""}" ${k === view ? 'aria-current="page"' : ""}><span class="nav-icon" aria-hidden="true">${icons[k]}</span><span>${esc(v)}</span></button>`,
+    )
     .join("");
   render();
   const pending = rows.filter((r) => r.dirty),
@@ -307,7 +320,7 @@ function flightTickets(data) {
     return `<button type="button" class="flight-ticket" data-act="flight" data-id="${leg}" aria-label="${filled ? "編輯" : "填寫"}${label}航班"><span class="ticket-stub"><span aria-hidden="true">✈︎</span>${label}</span><span class="ticket-body">${filled ? `<b>${esc(flight.number || label + "航班")}</b>` : ""}${route}</span></button>`;
   });
   return (
-    '<section aria-label="航班資訊"><h2>航班資訊</h2><div class="flight-grid">' +
+    '<section class="flights-section" aria-label="航班資訊"><h2>航班資訊</h2><div class="flight-grid">' +
     tickets.join("") +
     "</div></section>"
   );
@@ -382,11 +395,7 @@ function home() {
       ? "旅程回顧"
       : "Day " + (days(d.start, today) + 1) + " ｜ " + today;
   const tiles = before
-    ? [
-        ["住宿", d.hotel || "尚未填寫"],
-        ["飯店地址", d.hotelAddress || "尚未填寫"],
-        ["打包進度", done + " / " + pack.length],
-      ]
+    ? []
     : after
       ? [
           ["旅程天數", days(d.start, d.end) + 1 + " 天"],
@@ -407,6 +416,8 @@ function home() {
               .join(" ／ ") || "尚無安排",
           ],
         ];
+  const accommodation = `<section class="card accommodation"><div class="section-heading"><h2>住宿</h2>${btn("編輯住宿", "edit", trip.id, "text-button")}</div><h3>${esc(hotelLines(d.hotel || "尚未填寫住宿")).replaceAll("\n", "<br>")}</h3><small>飯店地址</small><p class="hotel-address">${esc(hotelLines(d.hotelAddress || "尚未填寫")).replaceAll("\n", "<br>")}</p>${mapLink({ address: d.hotelAddress, place: d.hotel })}</section>`;
+  const preparation = `<div class="packing-summary"><div><span>打包進度</span><span>${done} / ${pack.length}</span></div>${packingProgress(done, pack.length)}</div>`;
   return (
     '<div class="card trip-cover"><small>' +
     esc(title) +
@@ -434,9 +445,13 @@ function home() {
       )
       .join("") +
     "</div>" +
+    '<div class="home-layout">' +
     flightTickets(d) +
-    '<div class="tools">' +
-    btn("完整行程", "nav", "itinerary_items") +
+    accommodation +
+    "</div>" +
+    (before ? preparation : "") +
+    '<div class="tools home-actions">' +
+    btn("完整行程", "nav", "itinerary_items", "primary") +
     btn("快速記帳", "expense") +
     btn("購物清單", "nav", "shopping_items") +
     btn("行李清單", "nav", "packing_items") +
@@ -496,14 +511,19 @@ function itinerary() {
           " ｜ " +
           esc(date) +
           "</span>" +
-          btn(editingDate === date ? "完成編輯" : "編輯這天", "mode", date) +
+          btn(
+            editingDate === date ? "完成編輯" : "編輯這天",
+            "mode",
+            date,
+            "text-button",
+          ) +
           "</summary>" +
           (editingDate === date
             ? '<div class="day-tools">' +
               btn("新增行程", "addDay", date) +
               "</div>"
             : "") +
-          '<div class="table"><table class="itinTable"><thead><tr><th>時間</th><th>行程</th><th>交通</th><th>備註</th></tr></thead><tbody>' +
+          '<div class="table"><table class="itinTable"><colgroup><col class="time-col"><col class="place-col"><col class="transport-col"><col></colgroup><thead><tr><th>時間</th><th>行程</th><th>交通</th><th>備註</th></tr></thead><tbody>' +
           (date === d.start
             ? homeRow("從 家裡 出發")
             : lodgingRow(d, "從 住宿 出發")) +

@@ -22,7 +22,7 @@
   --ink: #3f3f3d;
   --secondary: #7a7873;
   --muted: color-mix(in srgb, var(--secondary) 70%, var(--ink));
-  --line: #c8c3bd;
+  --line: #dedbd6;
   --brand: #665f59;
   --brand2: var(--brand);
   --tint: #c8b8a4;
@@ -31,7 +31,7 @@
   --ok: #0f766e;
   --warn: #b45309;
   --bad: #b91c1c;
-  --shadow: 0 3px 12px rgba(102, 95, 89, 0.05);
+  --shadow: none;
   --radius: 18px;
   --radius2: 14px;
   --safeB: env(safe-area-inset-bottom, 0px);
@@ -177,7 +177,7 @@ button {
   padding: 10px 12px;
   font-size: 13px;
   cursor: pointer;
-  box-shadow: 0 10px 22px rgba(102, 95, 89, 0.08);
+  box-shadow: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -795,4 +795,256 @@ summary > span {
 summary > button {
   flex-shrink: 0;
   font-weight: 400;
+}
+
+/* Keep the travel content visually stronger than its controls. */
+header {
+  border-bottom: 0;
+  padding-bottom: 8px;
+}
+#top {
+  margin: 4px 0 18px;
+}
+#top strong {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+#top select {
+  border: 0;
+  background: transparent;
+  border-radius: 0;
+  padding-inline: 0;
+  font-weight: 600;
+}
+button {
+  border-radius: 8px;
+}
+button:hover {
+  background: var(--leaf);
+}
+button.primary:hover {
+  background: var(--ink);
+}
+.text-button,
+#account,
+#sync button,
+.itinTable td button {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+#sync {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 24px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+#sync button {
+  font-size: 11px;
+  padding-inline: 6px;
+}
+.trip-cover {
+  border: 0;
+  border-radius: 16px;
+  padding: 24px 28px;
+  margin-bottom: 24px;
+}
+.trip-cover h1 {
+  margin: 8px 0 12px;
+  font-size: clamp(28px, 4vw, 38px);
+}
+.trip-cover small {
+  border: 0;
+}
+.trip-cover p {
+  font-size: 13px;
+}
+.grid:empty {
+  display: none;
+}
+.home-layout {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+.home-layout h2 {
+  font-size: 15px !important;
+  letter-spacing: 0.04em;
+}
+.home-layout .flight-grid {
+  grid-template-columns: 1fr;
+  margin-bottom: 0;
+}
+.home-layout .accommodation {
+  margin: 0;
+  padding: 18px 20px;
+  border-radius: 14px;
+}
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.section-heading h2 {
+  margin: 0;
+}
+.section-heading button {
+  font-size: 12px;
+  padding: 4px;
+  min-height: 44px;
+}
+.accommodation h3 {
+  font-size: 15px;
+  line-height: 1.7;
+  margin: 0 0 16px;
+}
+.accommodation .hotel-address {
+  font-size: 13px;
+  line-height: 1.75;
+  margin: 6px 0 10px;
+  color: var(--muted);
+}
+.accommodation a {
+  font-size: 12px;
+}
+.packing-summary {
+  margin: 24px 0 16px;
+  max-width: 440px;
+}
+.packing-summary > div {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.packing-summary progress {
+  height: 5px;
+}
+.home-actions {
+  gap: 8px;
+  margin-top: 18px;
+}
+.home-actions button:not(.primary) {
+  border-color: transparent;
+  background: transparent;
+}
+nav {
+  padding: 8px 12px calc(8px + var(--safeB));
+  background: var(--bg);
+}
+.nav-inner {
+  gap: 4px;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+nav button {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 6px 2px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  box-shadow: none;
+  font-size: 12px;
+  min-height: 52px;
+}
+nav button.active {
+  background: var(--leaf);
+  border: 0;
+}
+.nav-icon {
+  font-family: var(--sans);
+  font-size: 19px;
+  line-height: 20px;
+}
+table.itinTable {
+  table-layout: fixed;
+}
+.time-col {
+  width: 112px;
+}
+.place-col {
+  width: 28%;
+}
+.transport-col {
+  width: 70px;
+}
+.itinTable th {
+  font-size: 12px;
+  font-weight: 400;
+  background: var(--card);
+  padding-block: 12px;
+}
+.itinTable td {
+  padding-block: 14px;
+  line-height: 1.7;
+}
+.itinTable td:nth-child(2) > b {
+  font-size: 14px;
+}
+.itinTable td:nth-child(4) {
+  color: var(--muted);
+  font-size: 12px;
+}
+.itinTable td button {
+  padding-inline: 5px;
+  font-size: 12px;
+}
+summary {
+  background: var(--leaf);
+  font-size: 15px;
+}
+summary button {
+  font-size: 12px;
+}
+body {
+  padding-bottom: calc(88px + var(--safeB));
+}
+#toast:not(:empty) {
+  bottom: calc(86px + var(--safeB));
+}
+@media (max-width: 700px) {
+  .home-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .home-layout .flight-grid {
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  }
+  .nav-inner {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+  nav {
+    padding-inline: 8px;
+  }
+  .trip-cover {
+    padding: 20px;
+  }
+  .packing-summary {
+    max-width: none;
+  }
+}
+@media (max-width: 370px) {
+  .nav-inner {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  body {
+    padding-bottom: calc(140px + var(--safeB));
+  }
+  #toast:not(:empty) {
+    bottom: calc(140px + var(--safeB));
+  }
+}
+
+@media(max-width:640px){
+ table.itinTable, table.itinTable tbody {display:block;width:100%;table-layout:auto}
+ table.itinTable colgroup {display:none}
+ table.itinTable tbody tr.lodging-row > td {width:100%}
 }
