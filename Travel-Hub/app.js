@@ -1,3 +1,4 @@
+import { watchUpdates } from "./updates.js";
 import {
   preparationStages,
   currentStage,
@@ -1574,10 +1575,9 @@ document.addEventListener("input", (e) => {
 });
 async function init() {
   setup();
-  if ("serviceWorker" in navigator)
-    await navigator.serviceWorker
-      .register("./sw.js", { scope: "./" })
-      .catch((e) => message(e.message));
+  watchUpdates(() => dlg.open || rows.some((r) => r.dirty || r.conflict)).catch(
+    (e) => message(e.message),
+  );
   if (!cfg) return;
   client = createClient(cfg.url, cfg.publicKey, {
     auth: { storageKey: "hub-auth:" + cfg.url },

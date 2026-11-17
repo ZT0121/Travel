@@ -1,9 +1,10 @@
 const prefix = "travel-hub:" + self.registration.scope + ":";
-const cacheName = prefix + "v1-30";
+const cacheName = prefix + "v1-31";
 const shell = [
   "./",
   "./index.html",
   "./app.js",
+  "./updates.js",
   "./store.js",
   "./fields.js",
   "./preparation.js",
@@ -17,12 +18,7 @@ const shell = [
   "./icon-512.png?v=plane1",
 ];
 self.addEventListener("install", (e) =>
-  e.waitUntil(
-    caches
-      .open(cacheName)
-      .then((c) => c.addAll(shell))
-      .then(() => self.skipWaiting()),
-  ),
+  e.waitUntil(caches.open(cacheName).then((c) => c.addAll(shell))),
 );
 self.addEventListener("activate", (e) =>
   e.waitUntil(
@@ -43,4 +39,9 @@ self.addEventListener("fetch", (e) => {
         .open(cacheName)
         .then(async (c) => (await c.match(e.request)) || fetch(e.request)),
     );
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "ACTIVATE_UPDATE")
+    event.waitUntil(self.skipWaiting());
 });
