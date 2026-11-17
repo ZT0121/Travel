@@ -11,6 +11,7 @@ import {
   hotelLines,
   people,
   packingBag,
+  comparePacking,
   localDate,
   days,
   totals,
@@ -721,7 +722,9 @@ function packingList(items) {
         const groupKey = trip.id + ":" + person;
         return `<details class="packing-group" data-packing-group="${esc(groupKey)}" ${closedPackingGroups.has(groupKey) ? "" : "open"}><summary class="packing-heading"><span>${esc(person === "我" ? "我（舊稱呼）" : person)}</span><small>已打包 ${count} / ${group.length}</small></summary>${bags
           .map((bag) => {
-            const entries = group.filter((r) => packingBag(r.data.bag) === bag);
+            const entries = group
+              .filter((r) => packingBag(r.data.bag) === bag)
+              .sort(comparePacking);
             const done = entries.filter((r) => r.data.done).length;
             return `<section class="packing-section"><div class="packing-section-title"><h3>${esc(bag)}</h3><small>${done} / ${entries.length}</small></div>${entries.length ? entries.map((r) => `<div class="packing-item"><label class="packing-check"><input type="checkbox" data-packing="${esc(r.id)}" ${r.data.done ? "checked" : ""}><span><strong>${esc(r.data.name)}</strong>${r.data.notes ? `<small>${esc(r.data.notes)}</small>` : ""}</span></label>${r.data.category ? `<small>${esc(r.data.category)}</small>` : ""}${filter.editPacking ? '<div class="packing-actions">' + btn("複製", "duplicatePacking", r.id) + controls(r) + "</div>" : ""}</div>`).join("") : '<p class="packing-empty">尚未新增物品</p>'}</section>`;
           })

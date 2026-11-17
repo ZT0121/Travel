@@ -2,6 +2,22 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { totals, localDate, days, overlaps, safeMap } from "../fields.js";
 import { stableId } from "../store.js";
+import { comparePacking } from "../fields.js";
+
+test("packing order stays consistent across sync and checked states", () => {
+  const items = [
+    { id: "d", data: { name: "袋子10", category: "收納" } },
+    { id: "c", data: { name: "袋子2", category: "收納" } },
+    { id: "a", data: { name: "未分類物品" } },
+    { id: "b", data: { name: "袋子2", category: "收納" } },
+  ];
+  const ids = (rows) => rows.toSorted(comparePacking).map((r) => r.id);
+  assert.deepEqual(ids(items), ["b", "c", "d", "a"]);
+  assert.deepEqual(ids([...items].reverse()), ids(items));
+  items[1].data.done = true;
+  items[1].stamp = "later-update";
+  assert.deepEqual(ids(items), ["b", "c", "d", "a"]);
+});
 test("目的地日期、重疊時段、匯率與安全導航", async () => {
   assert.equal(
     localDate("Asia/Seoul", new Date("2027-01-20T15:00:00Z")),

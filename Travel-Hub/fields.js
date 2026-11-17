@@ -130,3 +130,19 @@ export function hotelLines(value) {
 export function packingBag(value) {
   return { 隨身: "隨身行李", 托運: "托運行李" }[value] || value || "未分類";
 }
+
+const packingCollator = new Intl.Collator("zh-TW", { numeric: true });
+export function comparePacking(a, b) {
+  const categoryA = (a.data.category || "").trim();
+  const categoryB = (b.data.category || "").trim();
+  return (
+    Number(!categoryA) - Number(!categoryB) ||
+    packingCollator.compare(categoryA, categoryB) ||
+    packingCollator.compare(
+      (a.data.name || "").trim(),
+      (b.data.name || "").trim(),
+    ) ||
+    packingCollator.compare(a.data.notes || "", b.data.notes || "") ||
+    a.id.localeCompare(b.id)
+  );
+}
