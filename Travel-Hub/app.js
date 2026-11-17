@@ -724,9 +724,9 @@ function packingList(items) {
           .map((bag) => {
             const entries = group
               .filter((r) => packingBag(r.data.bag) === bag)
-              .sort(comparePacking);
+              .sort((a, b) => comparePacking(a, b, trip.data.packingOrder));
             const done = entries.filter((r) => r.data.done).length;
-            return `<section class="packing-section"><div class="packing-section-title"><h3>${esc(bag)}</h3><small>${done} / ${entries.length}</small></div>${entries.length ? entries.map((r) => `<div class="packing-item"><label class="packing-check"><input type="checkbox" data-packing="${esc(r.id)}" ${r.data.done ? "checked" : ""}><span><strong>${esc(r.data.name)}</strong>${r.data.notes ? `<small>${esc(r.data.notes)}</small>` : ""}</span></label>${r.data.category ? `<small>${esc(r.data.category)}</small>` : ""}${filter.editPacking ? '<div class="packing-actions">' + btn("複製", "duplicatePacking", r.id) + controls(r) + "</div>" : ""}</div>`).join("") : '<p class="packing-empty">尚未新增物品</p>'}</section>`;
+            return `<section class="packing-section"><div class="packing-section-title"><h3>${esc(bag)}</h3><small>${done} / ${entries.length}</small></div>${entries.length ? entries.map((r, index) => `<div class="packing-item"><label class="packing-check"><input type="checkbox" data-packing="${esc(r.id)}" ${r.data.done ? "checked" : ""}><span><strong>${esc(r.data.name)}</strong>${r.data.notes ? `<small>${esc(r.data.notes)}</small>` : ""}</span></label>${r.data.category ? `<small>${esc(r.data.category)}</small>` : ""}${filter.editPacking ? '<div class="packing-actions">' + (index > 0 ? btn("上移", "packingUp", r.id) : "") + (index < entries.length - 1 ? btn("下移", "packingDown", r.id) : "") + btn("複製", "duplicatePacking", r.id) + controls(r) + "</div>" : ""}</div>`).join("") : '<p class="packing-empty">尚未新增物品</p>'}</section>`;
           })
           .join("")}</details>`;
       })
@@ -1206,6 +1206,35 @@ async function action(a, id) {
     return editor(
       a === "newTrip" ? "trips" : a === "expense" ? "expenses" : view,
     );
+  if (
+    (a === "packingUp" || a === "packingDown") &&
+    r?.table === "packing_items" &&
+    filter.editPacking
+  ) {
+    const all = live("packing_items").toSorted((x, y) =>
+      comparePacking(x, y, trip.data.packingOrder),
+    );
+    const group = all.filter(
+      (x) =>
+        (x.data.person || "未指定") === (r.data.person || "未指定") &&
+        packingBag(x.data.bag) === packingBag(r.data.bag),
+    );
+    const target =
+      group[group.findIndex((x) => x.id === id) + (a === "packingUp" ? -1 : 1)];
+    if (!target) return;
+    const order = all.map((x) => x.id);
+    const from = order.indexOf(id),
+      to = order.indexOf(target.id);
+    [order[from], order[to]] = [order[to], order[from]];
+    return store.save(
+      "trips",
+      trip.id,
+      null,
+      { ...trip.data, packingOrder: order },
+      false,
+      trip.stamp,
+    );
+  }
   if (a === "duplicatePacking" && r?.table === "packing_items")
     return editor(
       "packing_items",

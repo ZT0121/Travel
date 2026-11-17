@@ -442,7 +442,7 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
     await expect(a.locator('dialog [name="bag"]')).toHaveValue("托運行李");
     await expect(a.locator('dialog [name="notes"]')).toHaveValue("折疊款");
     await fill(a, "name", "備用雨傘");
-    await a.locator('dialog [name="person"]').selectOption("肥儒");
+    await a.locator('dialog [name="person"]').selectOption("阿庭");
     await save(a);
     await expect(
       a.getByRole("checkbox", { name: "備用雨傘" }),
@@ -456,6 +456,41 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
     await expect(
       b.getByRole("checkbox", { name: "備用雨傘" }),
     ).not.toBeChecked();
+    await expect(a.locator(".packing-item strong")).toHaveText([
+      "雨傘",
+      "備用雨傘",
+    ]);
+    await a
+      .locator(".packing-item")
+      .filter({ hasText: "備用雨傘" })
+      .getByRole("button", { name: "上移", exact: true })
+      .click();
+    await expect(a.locator(".packing-item strong")).toHaveText([
+      "備用雨傘",
+      "雨傘",
+    ]);
+    await sync(a);
+    await sync(b);
+    await expect(b.locator(".packing-item strong")).toHaveText([
+      "備用雨傘",
+      "雨傘",
+    ]);
+    await a
+      .locator(".packing-item")
+      .filter({ hasText: "備用雨傘" })
+      .getByRole("button", { name: "下移", exact: true })
+      .click();
+    await expect(a.locator(".packing-item strong")).toHaveText([
+      "雨傘",
+      "備用雨傘",
+    ]);
+    await click(a, "完成編輯");
+    await expect(
+      a.getByRole("button", { name: "上移", exact: true }),
+    ).toHaveCount(0);
+    await expect(
+      a.getByRole("button", { name: "下移", exact: true }),
+    ).toHaveCount(0);
     await nav(a, "收藏");
     await click(a, "新增收藏");
     await fill(a, "name", "範例景點");

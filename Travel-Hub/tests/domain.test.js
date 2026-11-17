@@ -11,7 +11,10 @@ test("packing order stays consistent across sync and checked states", () => {
     { id: "a", data: { name: "未分類物品" } },
     { id: "b", data: { name: "袋子2", category: "收納" } },
   ];
-  const ids = (rows) => rows.toSorted(comparePacking).map((r) => r.id);
+  const ids = (rows) =>
+    rows
+      .toSorted((a, b) => comparePacking(a, b, ["b", "c", "d", "a"]))
+      .map((r) => r.id);
   assert.deepEqual(ids(items), ["b", "c", "d", "a"]);
   assert.deepEqual(ids([...items].reverse()), ids(items));
   items[1].data.done = true;
