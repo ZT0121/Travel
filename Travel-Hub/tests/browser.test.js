@@ -431,10 +431,91 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
     await click(a, "新增行李");
     await fill(a, "name", "雨傘");
     await a.locator('dialog [name="person"]').selectOption("阿庭");
+    await a.locator('dialog [name="bag"]').selectOption("托運行李");
+    await fill(a, "notes", "折疊款");
     await save(a);
     await expect(a.locator(".packing-actions")).toHaveCount(0);
-    await a.getByRole("checkbox", { name: "雨傘" }).check();
+    await a.getByRole("checkbox", { name: "雨傘 折疊款", exact: true }).check();
     await sync(a);
+    await click(a, "編輯清單");
+    await click(a, "複製");
+    await expect(a.locator('dialog [name="bag"]')).toHaveValue("托運行李");
+    await expect(a.locator('dialog [name="notes"]')).toHaveValue("折疊款");
+    await fill(a, "name", "備用雨傘");
+    await a.locator('dialog [name="person"]').selectOption("阿庭");
+    await save(a);
+    await expect(
+      a.getByRole("checkbox", { name: "備用雨傘" }),
+    ).not.toBeChecked();
+    await expect(
+      a.getByRole("checkbox", { name: "雨傘 折疊款", exact: true }),
+    ).toBeChecked();
+    await sync(a);
+    await nav(b, "行李");
+    await sync(b);
+    await expect(
+      b.getByRole("checkbox", { name: "備用雨傘" }),
+    ).not.toBeChecked();
+    await expect(a.locator(".packing-item strong")).toHaveText([
+      "雨傘",
+      "備用雨傘",
+    ]);
+    await a
+      .getByRole("button", { name: "拖曳排序 備用雨傘", exact: true })
+      .scrollIntoViewIfNeeded();
+    const handleBox = await a
+      .getByRole("button", { name: "拖曳排序 備用雨傘", exact: true })
+      .boundingBox();
+    const targetBox = await a.locator(".packing-item").first().boundingBox();
+    await a.mouse.move(
+      handleBox.x + handleBox.width / 2,
+      handleBox.y + handleBox.height / 2,
+    );
+    await a.mouse.down();
+    await a.mouse.move(targetBox.x + 20, targetBox.y + 8, { steps: 8 });
+    await a.mouse.up();
+    await expect(a.locator(".packing-item strong")).toHaveText([
+      "備用雨傘",
+      "雨傘",
+    ]);
+    await sync(a);
+    await sync(b);
+    await expect(b.locator(".packing-item strong")).toHaveText([
+      "備用雨傘",
+      "雨傘",
+    ]);
+    await a
+      .locator(".packing-section")
+      .filter({ has: a.locator(".packing-item") })
+      .first()
+      .evaluate((el) => el.scrollIntoView({ block: "center" }));
+    const touchHandle = await a
+      .getByRole("button", { name: "拖曳排序 備用雨傘", exact: true })
+      .boundingBox();
+    const touchTarget = await a.locator(".packing-item").last().boundingBox();
+    const touchSession = await a.context().newCDPSession(a);
+    await touchSession.send("Input.dispatchTouchEvent", {
+      type: "touchStart",
+      touchPoints: [{ x: touchHandle.x + 20, y: touchHandle.y + 20 }],
+    });
+    await touchSession.send("Input.dispatchTouchEvent", {
+      type: "touchMove",
+      touchPoints: [
+        { x: touchTarget.x + 20, y: touchTarget.y + touchTarget.height - 8 },
+      ],
+    });
+    await touchSession.send("Input.dispatchTouchEvent", {
+      type: "touchEnd",
+      touchPoints: [],
+    });
+    await touchSession.detach();
+    await expect(a.locator(".packing-item strong")).toHaveText([
+      "雨傘",
+      "備用雨傘",
+    ]);
+    await click(a, "完成編輯");
+    await expect(a.locator("[data-drag-packing]")).toHaveCount(0);
+    await expect(a.locator(".packing-handle")).toHaveCount(0);
     await nav(a, "收藏");
     await click(a, "新增收藏");
     await fill(a, "name", "範例景點");
@@ -497,8 +578,10 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
     a.once("dialog", (d) => d.accept());
     await click(a, "編輯清單");
     await click(a, "複製前趟項目");
-    await expect(a.locator(".packing-item")).toContainText("雨傘");
-    await expect(a.getByRole("checkbox", { name: "雨傘" })).not.toBeChecked();
+    await expect(a.locator(".packing-item")).toHaveCount(2);
+    await expect(
+      a.getByRole("checkbox", { name: "雨傘 折疊款", exact: true }),
+    ).not.toBeChecked();
     await a.goto(origin + "/Busan-2026/");
     await expect(a.locator("table.itinTable")).toHaveCount(5);
   } finally {

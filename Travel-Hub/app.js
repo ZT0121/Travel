@@ -11,6 +11,7 @@ import {
   hotelLines,
   people,
   packingBag,
+  comparePacking,
   localDate,
   days,
   totals,
@@ -721,9 +722,11 @@ function packingList(items) {
         const groupKey = trip.id + ":" + person;
         return `<details class="packing-group" data-packing-group="${esc(groupKey)}" ${closedPackingGroups.has(groupKey) ? "" : "open"}><summary class="packing-heading"><span>${esc(person === "我" ? "我（舊稱呼）" : person)}</span><small>已打包 ${count} / ${group.length}</small></summary>${bags
           .map((bag) => {
-            const entries = group.filter((r) => packingBag(r.data.bag) === bag);
+            const entries = group
+              .filter((r) => packingBag(r.data.bag) === bag)
+              .sort((a, b) => comparePacking(a, b, trip.data.packingOrder));
             const done = entries.filter((r) => r.data.done).length;
-            return `<section class="packing-section"><div class="packing-section-title"><h3>${esc(bag)}</h3><small>${done} / ${entries.length}</small></div>${entries.length ? entries.map((r) => `<div class="packing-item"><label class="packing-check"><input type="checkbox" data-packing="${esc(r.id)}" ${r.data.done ? "checked" : ""}><span><strong>${esc(r.data.name)}</strong>${r.data.notes ? `<small>${esc(r.data.notes)}</small>` : ""}</span></label>${r.data.category ? `<small>${esc(r.data.category)}</small>` : ""}${filter.editPacking ? '<div class="packing-actions">' + controls(r) + "</div>" : ""}</div>`).join("") : '<p class="packing-empty">尚未新增物品</p>'}</section>`;
+            return `<section class="packing-section"><div class="packing-section-title"><h3>${esc(bag)}</h3><small>${done} / ${entries.length}</small></div>${entries.length ? entries.map((r) => `<div class="packing-item" data-packing-row="${esc(r.id)}"><label class="packing-check"><input type="checkbox" data-packing="${esc(r.id)}" ${r.data.done ? "checked" : ""}><span><strong>${esc(r.data.name)}</strong>${r.data.notes ? `<small>${esc(r.data.notes)}</small>` : ""}</span></label>${r.data.category ? `<small>${esc(r.data.category)}</small>` : ""}${filter.editPacking ? '<div class="packing-actions">' + `<button type="button" class="packing-handle" data-drag-packing="${esc(r.id)}" aria-label="拖曳排序 ${esc(r.data.name)}" title="拖曳排序（也可使用方向鍵）">⠿</button>` + btn("複製", "duplicatePacking", r.id) + controls(r) + "</div>" : ""}</div>`).join("") : '<p class="packing-empty">尚未新增物品</p>'}</section>`;
           })
           .join("")}</details>`;
       })
@@ -1002,7 +1005,7 @@ function editor(table, r = null, initial = {}, mode = "") {
     ...initial,
   };
   if (table === "packing_items")
-    values.bag = packingBag(r?.data.bag || "隨身行李");
+    values.bag = packingBag(values.bag || "隨身行李");
   let defs = fields(table, currency);
   if (table === "trips" && r?.data.transport)
     defs.push(["transport", "交通摘要（原有資料）"]);
@@ -1016,7 +1019,13 @@ function editor(table, r = null, initial = {}, mode = "") {
           : "")
       : "";
   modal(
-    (mode === "move" ? "移動" : r ? "編輯" : "新增") + labels[table],
+    (mode === "move"
+      ? "移動"
+      : mode === "duplicate"
+        ? "複製"
+        : r
+          ? "編輯"
+          : "新增") + labels[table],
     inputs(defs, values) + photos,
     async (f) => {
       const d = { ...r?.data, ...initial };
@@ -1197,6 +1206,42 @@ async function action(a, id) {
     return editor(
       a === "newTrip" ? "trips" : a === "expense" ? "expenses" : view,
     );
+  if (
+    (a === "packingUp" || a === "packingDown") &&
+    r?.table === "packing_items" &&
+    filter.editPacking
+  ) {
+    const all = live("packing_items").toSorted((x, y) =>
+      comparePacking(x, y, trip.data.packingOrder),
+    );
+    const group = all.filter(
+      (x) =>
+        (x.data.person || "未指定") === (r.data.person || "未指定") &&
+        packingBag(x.data.bag) === packingBag(r.data.bag),
+    );
+    const target =
+      group[group.findIndex((x) => x.id === id) + (a === "packingUp" ? -1 : 1)];
+    if (!target) return;
+    const order = all.map((x) => x.id);
+    const from = order.indexOf(id),
+      to = order.indexOf(target.id);
+    [order[from], order[to]] = [order[to], order[from]];
+    return store.save(
+      "trips",
+      trip.id,
+      null,
+      { ...trip.data, packingOrder: order },
+      false,
+      trip.stamp,
+    );
+  }
+  if (a === "duplicatePacking" && r?.table === "packing_items")
+    return editor(
+      "packing_items",
+      null,
+      { ...r.data, done: false },
+      "duplicate",
+    );
   if (a === "edit" || a === "move") return editor(r.table, r, {}, a);
   if (a === "schedule")
     return editor("itinerary_items", null, {
@@ -1360,6 +1405,104 @@ function setRate(rate, rateSource, rateAt, target) {
     target.stamp,
   );
 }
+let packingDrag = null;
+function clearPackingDrag() {
+  document
+    .querySelectorAll(
+      ".packing-dragging, .packing-drop-before, .packing-drop-after",
+    )
+    .forEach((el) =>
+      el.classList.remove(
+        "packing-dragging",
+        "packing-drop-before",
+        "packing-drop-after",
+      ),
+    );
+  packingDrag = null;
+}
+document.addEventListener("pointerdown", (e) => {
+  const handle = e.target.closest("[data-drag-packing]");
+  if (!handle || !filter.editPacking || e.button !== 0) return;
+  const row = handle.closest(".packing-item");
+  packingDrag = {
+    id: handle.dataset.dragPacking,
+    tripId: trip.id,
+    section: row.closest(".packing-section"),
+    pointerId: e.pointerId,
+  };
+  handle.setPointerCapture(e.pointerId);
+  row.classList.add("packing-dragging");
+  e.preventDefault();
+});
+document.addEventListener("pointermove", (e) => {
+  if (!packingDrag || e.pointerId !== packingDrag.pointerId) return;
+  const drag = packingDrag;
+  document
+    .querySelectorAll(".packing-drop-before, .packing-drop-after")
+    .forEach((el) =>
+      el.classList.remove("packing-drop-before", "packing-drop-after"),
+    );
+  drag.target = null;
+  const row = document
+    .elementFromPoint(e.clientX, e.clientY)
+    ?.closest("[data-packing-row]");
+  if (
+    row &&
+    row.closest(".packing-section") === drag.section &&
+    row.dataset.packingRow !== drag.id
+  ) {
+    drag.target = row.dataset.packingRow;
+    const box = row.getBoundingClientRect();
+    drag.after = e.clientY > box.top + box.height / 2;
+    row.classList.add(
+      drag.after ? "packing-drop-after" : "packing-drop-before",
+    );
+  }
+  if (e.clientY < 80) window.scrollBy(0, -16);
+  else if (e.clientY > innerHeight - 80) window.scrollBy(0, 16);
+});
+document.addEventListener("pointerup", async (e) => {
+  if (!packingDrag || e.pointerId !== packingDrag.pointerId) return;
+  const drag = packingDrag;
+  clearPackingDrag();
+  if (!drag.target || trip.id !== drag.tripId || !filter.editPacking) return;
+  const all = live("packing_items").toSorted((a, b) =>
+    comparePacking(a, b, trip.data.packingOrder),
+  );
+  const source = all.find((r) => r.id === drag.id),
+    target = all.find((r) => r.id === drag.target);
+  if (
+    !source ||
+    !target ||
+    source.data.person !== target.data.person ||
+    packingBag(source.data.bag) !== packingBag(target.data.bag)
+  )
+    return;
+  const order = all.map((r) => r.id).filter((id) => id !== drag.id);
+  order.splice(order.indexOf(drag.target) + Number(drag.after), 0, drag.id);
+  try {
+    await store.save(
+      "trips",
+      trip.id,
+      null,
+      { ...trip.data, packingOrder: order },
+      false,
+      trip.stamp,
+    );
+  } catch (err) {
+    message(err.message);
+  }
+});
+document.addEventListener("pointercancel", clearPackingDrag);
+document.addEventListener("keydown", (e) => {
+  const handle = e.target.closest("[data-drag-packing]");
+  if (!handle || !["ArrowUp", "ArrowDown"].includes(e.key)) return;
+  e.preventDefault();
+  const id = handle.dataset.dragPacking;
+  action(e.key === "ArrowUp" ? "packingUp" : "packingDown", id).catch((err) =>
+    message(err.message),
+  );
+});
 document.addEventListener("click", (e) => {
   const b = e.target.closest("[data-act],#account");
   if (b?.dataset.act === "mode") e.preventDefault();
