@@ -461,10 +461,19 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
       "備用雨傘",
     ]);
     await a
-      .locator(".packing-item")
-      .filter({ hasText: "備用雨傘" })
-      .getByRole("button", { name: "上移", exact: true })
-      .click();
+      .getByRole("button", { name: "拖曳排序 備用雨傘", exact: true })
+      .scrollIntoViewIfNeeded();
+    const handleBox = await a
+      .getByRole("button", { name: "拖曳排序 備用雨傘", exact: true })
+      .boundingBox();
+    const targetBox = await a.locator(".packing-item").first().boundingBox();
+    await a.mouse.move(
+      handleBox.x + handleBox.width / 2,
+      handleBox.y + handleBox.height / 2,
+    );
+    await a.mouse.down();
+    await a.mouse.move(targetBox.x + 20, targetBox.y + 8, { steps: 8 });
+    await a.mouse.up();
     await expect(a.locator(".packing-item strong")).toHaveText([
       "備用雨傘",
       "雨傘",
@@ -476,21 +485,37 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
       "雨傘",
     ]);
     await a
-      .locator(".packing-item")
-      .filter({ hasText: "備用雨傘" })
-      .getByRole("button", { name: "下移", exact: true })
-      .click();
+      .locator(".packing-section")
+      .filter({ has: a.locator(".packing-item") })
+      .first()
+      .evaluate((el) => el.scrollIntoView({ block: "center" }));
+    const touchHandle = await a
+      .getByRole("button", { name: "拖曳排序 備用雨傘", exact: true })
+      .boundingBox();
+    const touchTarget = await a.locator(".packing-item").last().boundingBox();
+    const touchSession = await a.context().newCDPSession(a);
+    await touchSession.send("Input.dispatchTouchEvent", {
+      type: "touchStart",
+      touchPoints: [{ x: touchHandle.x + 20, y: touchHandle.y + 20 }],
+    });
+    await touchSession.send("Input.dispatchTouchEvent", {
+      type: "touchMove",
+      touchPoints: [
+        { x: touchTarget.x + 20, y: touchTarget.y + touchTarget.height - 8 },
+      ],
+    });
+    await touchSession.send("Input.dispatchTouchEvent", {
+      type: "touchEnd",
+      touchPoints: [],
+    });
+    await touchSession.detach();
     await expect(a.locator(".packing-item strong")).toHaveText([
       "雨傘",
       "備用雨傘",
     ]);
     await click(a, "完成編輯");
-    await expect(
-      a.getByRole("button", { name: "上移", exact: true }),
-    ).toHaveCount(0);
-    await expect(
-      a.getByRole("button", { name: "下移", exact: true }),
-    ).toHaveCount(0);
+    await expect(a.locator("[data-drag-packing]")).toHaveCount(0);
+    await expect(a.locator(".packing-handle")).toHaveCount(0);
     await nav(a, "收藏");
     await click(a, "新增收藏");
     await fill(a, "name", "範例景點");
