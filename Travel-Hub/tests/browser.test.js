@@ -431,10 +431,31 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
     await click(a, "新增行李");
     await fill(a, "name", "雨傘");
     await a.locator('dialog [name="person"]').selectOption("阿庭");
+    await a.locator('dialog [name="bag"]').selectOption("托運行李");
+    await fill(a, "notes", "折疊款");
     await save(a);
     await expect(a.locator(".packing-actions")).toHaveCount(0);
-    await a.getByRole("checkbox", { name: "雨傘" }).check();
+    await a.getByRole("checkbox", { name: "雨傘 折疊款", exact: true }).check();
     await sync(a);
+    await click(a, "編輯清單");
+    await click(a, "複製");
+    await expect(a.locator('dialog [name="bag"]')).toHaveValue("托運行李");
+    await expect(a.locator('dialog [name="notes"]')).toHaveValue("折疊款");
+    await fill(a, "name", "備用雨傘");
+    await a.locator('dialog [name="person"]').selectOption("肥儒");
+    await save(a);
+    await expect(
+      a.getByRole("checkbox", { name: "備用雨傘" }),
+    ).not.toBeChecked();
+    await expect(
+      a.getByRole("checkbox", { name: "雨傘 折疊款", exact: true }),
+    ).toBeChecked();
+    await sync(a);
+    await nav(b, "行李");
+    await sync(b);
+    await expect(
+      b.getByRole("checkbox", { name: "備用雨傘" }),
+    ).not.toBeChecked();
     await nav(a, "收藏");
     await click(a, "新增收藏");
     await fill(a, "name", "範例景點");
@@ -497,8 +518,10 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
     a.once("dialog", (d) => d.accept());
     await click(a, "編輯清單");
     await click(a, "複製前趟項目");
-    await expect(a.locator(".packing-item")).toContainText("雨傘");
-    await expect(a.getByRole("checkbox", { name: "雨傘" })).not.toBeChecked();
+    await expect(a.locator(".packing-item")).toHaveCount(2);
+    await expect(
+      a.getByRole("checkbox", { name: "雨傘 折疊款", exact: true }),
+    ).not.toBeChecked();
     await a.goto(origin + "/Busan-2026/");
     await expect(a.locator("table.itinTable")).toHaveCount(5);
   } finally {

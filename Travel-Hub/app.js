@@ -723,7 +723,7 @@ function packingList(items) {
           .map((bag) => {
             const entries = group.filter((r) => packingBag(r.data.bag) === bag);
             const done = entries.filter((r) => r.data.done).length;
-            return `<section class="packing-section"><div class="packing-section-title"><h3>${esc(bag)}</h3><small>${done} / ${entries.length}</small></div>${entries.length ? entries.map((r) => `<div class="packing-item"><label class="packing-check"><input type="checkbox" data-packing="${esc(r.id)}" ${r.data.done ? "checked" : ""}><span><strong>${esc(r.data.name)}</strong>${r.data.notes ? `<small>${esc(r.data.notes)}</small>` : ""}</span></label>${r.data.category ? `<small>${esc(r.data.category)}</small>` : ""}${filter.editPacking ? '<div class="packing-actions">' + controls(r) + "</div>" : ""}</div>`).join("") : '<p class="packing-empty">尚未新增物品</p>'}</section>`;
+            return `<section class="packing-section"><div class="packing-section-title"><h3>${esc(bag)}</h3><small>${done} / ${entries.length}</small></div>${entries.length ? entries.map((r) => `<div class="packing-item"><label class="packing-check"><input type="checkbox" data-packing="${esc(r.id)}" ${r.data.done ? "checked" : ""}><span><strong>${esc(r.data.name)}</strong>${r.data.notes ? `<small>${esc(r.data.notes)}</small>` : ""}</span></label>${r.data.category ? `<small>${esc(r.data.category)}</small>` : ""}${filter.editPacking ? '<div class="packing-actions">' + btn("複製", "duplicatePacking", r.id) + controls(r) + "</div>" : ""}</div>`).join("") : '<p class="packing-empty">尚未新增物品</p>'}</section>`;
           })
           .join("")}</details>`;
       })
@@ -1002,7 +1002,7 @@ function editor(table, r = null, initial = {}, mode = "") {
     ...initial,
   };
   if (table === "packing_items")
-    values.bag = packingBag(r?.data.bag || "隨身行李");
+    values.bag = packingBag(values.bag || "隨身行李");
   let defs = fields(table, currency);
   if (table === "trips" && r?.data.transport)
     defs.push(["transport", "交通摘要（原有資料）"]);
@@ -1016,7 +1016,13 @@ function editor(table, r = null, initial = {}, mode = "") {
           : "")
       : "";
   modal(
-    (mode === "move" ? "移動" : r ? "編輯" : "新增") + labels[table],
+    (mode === "move"
+      ? "移動"
+      : mode === "duplicate"
+        ? "複製"
+        : r
+          ? "編輯"
+          : "新增") + labels[table],
     inputs(defs, values) + photos,
     async (f) => {
       const d = { ...r?.data, ...initial };
@@ -1196,6 +1202,13 @@ async function action(a, id) {
   if (a === "add" || a === "newTrip" || a === "expense")
     return editor(
       a === "newTrip" ? "trips" : a === "expense" ? "expenses" : view,
+    );
+  if (a === "duplicatePacking" && r?.table === "packing_items")
+    return editor(
+      "packing_items",
+      null,
+      { ...r.data, done: false },
+      "duplicate",
     );
   if (a === "edit" || a === "move") return editor(r.table, r, {}, a);
   if (a === "schedule")
