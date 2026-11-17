@@ -699,6 +699,8 @@ function stats(rs) {
         "</div>"
     : "";
 }
+const packingArrow = (label, arrow, action, id) =>
+  `<button type="button" aria-label="${label}" title="${label}" data-act="${action}" data-id="${esc(id)}"><span aria-hidden="true">${arrow}</span></button>`;
 const closedPackingGroups = new Set();
 function packingList(items) {
   const groups = [
@@ -726,7 +728,7 @@ function packingList(items) {
               .filter((r) => packingBag(r.data.bag) === bag)
               .sort((a, b) => comparePacking(a, b, trip.data.packingOrder));
             const done = entries.filter((r) => r.data.done).length;
-            return `<section class="packing-section"><div class="packing-section-title"><h3>${esc(bag)}</h3><small>${done} / ${entries.length}</small></div>${entries.length ? entries.map((r, index) => `<div class="packing-item"><label class="packing-check"><input type="checkbox" data-packing="${esc(r.id)}" ${r.data.done ? "checked" : ""}><span><strong>${esc(r.data.name)}</strong>${r.data.notes ? `<small>${esc(r.data.notes)}</small>` : ""}</span></label>${r.data.category ? `<small>${esc(r.data.category)}</small>` : ""}${filter.editPacking ? '<div class="packing-actions">' + (index > 0 ? btn("上移", "packingUp", r.id) : "") + (index < entries.length - 1 ? btn("下移", "packingDown", r.id) : "") + btn("複製", "duplicatePacking", r.id) + controls(r) + "</div>" : ""}</div>`).join("") : '<p class="packing-empty">尚未新增物品</p>'}</section>`;
+            return `<section class="packing-section"><div class="packing-section-title"><h3>${esc(bag)}</h3><small>${done} / ${entries.length}</small></div>${entries.length ? entries.map((r, index) => `<div class="packing-item"><label class="packing-check"><input type="checkbox" data-packing="${esc(r.id)}" ${r.data.done ? "checked" : ""}><span><strong>${esc(r.data.name)}</strong>${r.data.notes ? `<small>${esc(r.data.notes)}</small>` : ""}</span></label>${r.data.category ? `<small>${esc(r.data.category)}</small>` : ""}${filter.editPacking ? '<div class="packing-actions">' + (index > 0 ? packingArrow("上移", "↑", "packingUp", r.id) : "") + (index < entries.length - 1 ? packingArrow("下移", "↓", "packingDown", r.id) : "") + btn("複製", "duplicatePacking", r.id) + controls(r) + "</div>" : ""}</div>`).join("") : '<p class="packing-empty">尚未新增物品</p>'}</section>`;
           })
           .join("")}</details>`;
       })
