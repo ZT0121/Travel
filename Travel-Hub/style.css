@@ -1142,3 +1142,135 @@ body {
   margin-top: 8px;
   height: 5px;
 }
+
+.packing-group {
+  padding: 0;
+  overflow: hidden;
+}
+.packing-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--leaf);
+}
+.packing-heading h3 {
+  margin: 0;
+  font-size: 14px;
+}
+.packing-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 6px 16px;
+  border-top: 1px solid var(--line);
+}
+.packing-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 140px;
+  margin: 0;
+  min-height: 44px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.packing-check input {
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  flex: none;
+  accent-color: var(--brand);
+}
+.packing-check > span {
+  display: grid;
+  gap: 3px;
+  overflow-wrap: anywhere;
+}
+.packing-check strong {
+  font-size: 14px;
+  font-weight: 400;
+}
+.packing-check small {
+  white-space: pre-line;
+}
+.packing-check input:checked + span {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+.packing-actions {
+  display: flex;
+  gap: 4px;
+}
+.packing-actions button {
+  background: transparent;
+  border-color: transparent;
+  font-size: 12px;
+  padding-inline: 6px;
+}
+.packing-bag {
+  margin-left: auto;
+}
+
+.packing-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+.packing-grid .packing-group {
+  margin: 0;
+  background: var(--card);
+}
+.packing-group[open] summary {
+  margin-bottom: 0;
+}
+.packing-heading {
+  min-height: 54px;
+}
+.packing-heading > span::before {
+  content: "▾";
+  margin-right: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.packing-group:not([open]) .packing-heading > span::before {
+  content: "▸";
+}
+.packing-section {
+  padding: 12px 16px;
+}
+.packing-section + .packing-section {
+  border-top: 1px solid var(--line);
+}
+.packing-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.packing-section-title h3 {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand);
+  margin: 0;
+}
+.packing-section .packing-item {
+  padding: 4px 0;
+}
+.packing-section .packing-item:nth-child(2) {
+  border-top: 0;
+}
+.packing-empty {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 10px 0;
+}
+@media (max-width: 700px) {
+  .packing-grid {
+    grid-template-columns: 1fr;
+  }
+}

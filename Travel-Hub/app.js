@@ -10,6 +10,7 @@ import {
   labels,
   hotelLines,
   people,
+  packingBag,
   localDate,
   days,
   totals,
@@ -107,10 +108,19 @@ function account() {
   if (store) {
     modal(
       "個人帳號",
-      "<p>此裝置的預設記帳人：" +
-        esc(localStorage.getItem(key("person")) || "我") +
-        "</p>" +
-        btn("登出", "logout"),
+      inputs(
+        [["person", "此裝置的預設記帳人", ["", ...people.slice(0, 2)], true]],
+        {
+          person: people
+            .slice(0, 2)
+            .includes(localStorage.getItem(key("person")))
+            ? localStorage.getItem(key("person"))
+            : "",
+        },
+      ) + btn("登出", "logout"),
+      async (form) => {
+        localStorage.setItem(key("person"), String(form.get("person")));
+      },
     );
     return;
   }
@@ -688,6 +698,39 @@ function stats(rs) {
         "</div>"
     : "";
 }
+const closedPackingGroups = new Set();
+function packingList(items) {
+  const groups = [
+    ...new Set([...people, ...items.map((r) => r.data.person || "未指定")]),
+  ].filter((person) => !filter.person || person === filter.person);
+  return (
+    '<div class="packing-grid">' +
+    groups
+      .map((person) => {
+        const group = items.filter(
+          (r) => (r.data.person || "未指定") === person,
+        );
+        const bags = [
+          ...new Set([
+            "隨身行李",
+            "托運行李",
+            ...group.map((r) => packingBag(r.data.bag)),
+          ]),
+        ].filter((bag) => !filter.bag || bag === filter.bag);
+        const count = group.filter((r) => r.data.done).length;
+        const groupKey = trip.id + ":" + person;
+        return `<details class="packing-group" data-packing-group="${esc(groupKey)}" ${closedPackingGroups.has(groupKey) ? "" : "open"}><summary class="packing-heading"><span>${esc(person === "我" ? "我（舊稱呼）" : person)}</span><small>已打包 ${count} / ${group.length}</small></summary>${bags
+          .map((bag) => {
+            const entries = group.filter((r) => packingBag(r.data.bag) === bag);
+            const done = entries.filter((r) => r.data.done).length;
+            return `<section class="packing-section"><div class="packing-section-title"><h3>${esc(bag)}</h3><small>${done} / ${entries.length}</small></div>${entries.length ? entries.map((r) => `<div class="packing-item"><label class="packing-check"><input type="checkbox" data-packing="${esc(r.id)}" ${r.data.done ? "checked" : ""}><span><strong>${esc(r.data.name)}</strong>${r.data.notes ? `<small>${esc(r.data.notes)}</small>` : ""}</span></label>${r.data.category ? `<small>${esc(r.data.category)}</small>` : ""}${filter.editPacking ? '<div class="packing-actions">' + controls(r) + "</div>" : ""}</div>`).join("") : '<p class="packing-empty">尚未新增物品</p>'}</section>`;
+          })
+          .join("")}</details>`;
+      })
+      .join("") +
+    "</div>"
+  );
+}
 function list() {
   const source = live(view);
   let result = source,
@@ -698,12 +741,16 @@ function list() {
   ];
   const dropdown = (k, title, opts) => {
     tools += sel(k, opts || choices(k), filter[k], title);
-    if (filter[k]) result = result.filter((r) => r.data[k] === filter[k]);
+    if (filter[k])
+      result = result.filter(
+        (r) => (k === "bag" ? packingBag(r.data[k]) : r.data[k]) === filter[k],
+      );
   };
   if (view === "packing_items") {
-    dropdown("person", "全部", people);
-    dropdown("bag", "全部行李類型", ["隨身", "托運"]);
-    tools += btn("複製前趟項目", "copy");
+    dropdown("person", "全部", [...new Set([...people, ...choices("person")])]);
+    dropdown("bag", "全部行李類型", ["隨身行李", "托運行李"]);
+    tools += btn(filter.editPacking ? "完成編輯" : "編輯清單", "packingMode");
+    if (filter.editPacking) tools += btn("複製前趟項目", "copy");
     const done = source.filter((r) => r.data.done).length;
     extra =
       '<div class="card"><p>已打包 ' +
@@ -753,6 +800,10 @@ function list() {
       "</p></div>" +
       stats(result);
   }
+  if (view === "packing_items")
+    return (
+      '<div class="tools">' + tools + "</div>" + extra + packingList(result)
+    );
   return (
     '<div class="tools">' +
     tools +
@@ -938,12 +989,20 @@ function editor(table, r = null, initial = {}, mode = "") {
         : "",
     qty: 1,
     rate: tripData.rate,
-    person: localStorage.getItem(key("person")) || "我",
+    person:
+      table === "expenses" &&
+      people.slice(0, 2).includes(localStorage.getItem(key("person")))
+        ? localStorage.getItem(key("person"))
+        : table === "packing_items"
+          ? filter.person || ""
+          : "",
     timezone: "Asia/Seoul",
     currency,
     ...r?.data,
     ...initial,
   };
+  if (table === "packing_items")
+    values.bag = packingBag(r?.data.bag || "隨身行李");
   let defs = fields(table, currency);
   if (table === "trips" && r?.data.transport)
     defs.push(["transport", "交通摘要（原有資料）"]);
@@ -1128,6 +1187,11 @@ async function action(a, id) {
     return;
   }
   if (a === "addDay") return editor("itinerary_items", null, { date: id });
+  if (a === "packingMode") {
+    filter.editPacking = !filter.editPacking;
+    render();
+    return;
+  }
   if (a === "retry") return store.sync();
   if (a === "add" || a === "newTrip" || a === "expense")
     return editor(
@@ -1304,7 +1368,30 @@ document.addEventListener("click", (e) => {
       message(err.message),
     );
 });
+document.addEventListener(
+  "toggle",
+  (e) => {
+    const group = e.target.dataset?.packingGroup;
+    if (!group) return;
+    if (e.target.open) closedPackingGroups.delete(group);
+    else closedPackingGroups.add(group);
+  },
+  true,
+);
 document.addEventListener("change", (e) => {
+  if (e.target.dataset.packing) {
+    const input = e.target;
+    input.disabled = true;
+    action("toggle", input.dataset.packing)
+      .catch((err) => {
+        input.checked = !input.checked;
+        message(err.message);
+      })
+      .finally(() => {
+        input.disabled = false;
+      });
+    return;
+  }
   if (e.target.dataset.task) {
     const input = e.target;
     input.disabled = true;

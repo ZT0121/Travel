@@ -65,14 +65,14 @@ export function fields(table, currency) {
       ["currency", "幣別", [...new Set([currency, "TWD"])]],
       ["category", "分類", categories],
       ["pay", "付款方式", ["現金", "信用卡", "交通卡", "其他"]],
-      ["person", "記帳人", people.slice(0, 2)],
+      ["person", "記帳人", ["", ...people.slice(0, 2)], true],
       ["rate", "記錄匯率（1 目的地幣值多少台幣）", "number", true],
       notes,
     ],
     packing_items: [
       name,
-      ["person", "人員", people],
-      ["bag", "行李類型", ["隨身", "托運"]],
+      ["person", "人員", ["", ...people], true],
+      ["bag", "行李類型", ["隨身行李", "托運行李"]],
       ["category", "分類"],
       notes,
     ],
@@ -118,9 +118,15 @@ export function overlaps(a, b) {
   );
 }
 
-
 export function hotelLines(value) {
   if (value.includes("\n")) return value;
   // Older single-line entries commonly contain English followed by Korean.
-  return value.replace(/(\p{Script=Latin}[^\p{Script=Hangul}]*?)\s*(?=\p{Script=Hangul})/u, "$1\n");
+  return value.replace(
+    /(\p{Script=Latin}[^\p{Script=Hangul}]*?)\s*(?=\p{Script=Hangul})/u,
+    "$1\n",
+  );
+}
+
+export function packingBag(value) {
+  return { 隨身: "隨身行李", 托運: "托運行李" }[value] || value || "未分類";
 }

@@ -260,6 +260,9 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
     await click(a, "查看全部待辦");
     await expect(a.getByRole("checkbox", { name: "處理網路" })).toBeVisible();
     await nav(b, "首頁");
+    await click(a, "帳號");
+    await a.locator('dialog [name="person"]').selectOption("阿庭");
+    await save(a);
     await nav(a, "行程");
     await expect(a.locator(".lodging-row")).toHaveText([
       "從 家裡 出發",
@@ -427,8 +430,10 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
     await nav(a, "行李");
     await click(a, "新增行李");
     await fill(a, "name", "雨傘");
+    await a.locator('dialog [name="person"]').selectOption("阿庭");
     await save(a);
-    await click(a, "未打包");
+    await expect(a.locator(".packing-actions")).toHaveCount(0);
+    await a.getByRole("checkbox", { name: "雨傘" }).check();
     await sync(a);
     await nav(a, "收藏");
     await click(a, "新增收藏");
@@ -490,9 +495,10 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
     await expect(a.locator("#page")).toContainText("NT$ 72");
     await nav(a, "行李");
     a.once("dialog", (d) => d.accept());
+    await click(a, "編輯清單");
     await click(a, "複製前趟項目");
-    await expect(a.locator(".entry")).toContainText("雨傘");
-    await expect(a.locator(".entry")).toContainText("未打包");
+    await expect(a.locator(".packing-item")).toContainText("雨傘");
+    await expect(a.getByRole("checkbox", { name: "雨傘" })).not.toBeChecked();
     await a.goto(origin + "/Busan-2026/");
     await expect(a.locator("table.itinTable")).toHaveCount(5);
   } finally {
