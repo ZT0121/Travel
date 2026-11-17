@@ -61,3 +61,10 @@ test("preparation stages use destination dates and keep earlier unfinished tasks
   );
   assert.equal(currentStage(trip, new Date("2027-01-19T15:00:00Z")), 3);
 });
+
+test("legacy packing types keep their category under the new labels", async () => {
+  const { packingBag } = await import("../fields.js");
+  assert.equal(packingBag("隨身"), "隨身行李");
+  assert.equal(packingBag("托運"), "托運行李");
+  assert.equal(packingBag("隨身行李"), "隨身行李");
+});

@@ -72,7 +72,7 @@ export function fields(table, currency) {
     packing_items: [
       name,
       ["person", "人員", ["", ...people], true],
-      ["bag", "行李類型", ["隨身", "托運"]],
+      ["bag", "行李類型", ["隨身行李", "托運行李"]],
       ["category", "分類"],
       notes,
     ],
@@ -125,4 +125,8 @@ export function hotelLines(value) {
     /(\p{Script=Latin}[^\p{Script=Hangul}]*?)\s*(?=\p{Script=Hangul})/u,
     "$1\n",
   );
+}
+
+export function packingBag(value) {
+  return { 隨身: "隨身行李", 托運: "托運行李" }[value] || value || "未分類";
 }
