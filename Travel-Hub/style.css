@@ -1142,3 +1142,75 @@ body {
   margin-top: 8px;
   height: 5px;
 }
+
+.packing-group {
+  padding: 0;
+  overflow: hidden;
+}
+.packing-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: var(--leaf);
+}
+.packing-heading h3 {
+  margin: 0;
+  font-size: 14px;
+}
+.packing-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 6px 16px;
+  border-top: 1px solid var(--line);
+}
+.packing-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 140px;
+  margin: 0;
+  min-height: 44px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.packing-check input {
+  width: 18px;
+  height: 18px;
+  min-height: 18px;
+  flex: none;
+  accent-color: var(--brand);
+}
+.packing-check > span {
+  display: grid;
+  gap: 3px;
+  overflow-wrap: anywhere;
+}
+.packing-check strong {
+  font-size: 14px;
+  font-weight: 400;
+}
+.packing-check small {
+  white-space: pre-line;
+}
+.packing-check input:checked + span {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+.packing-actions {
+  display: flex;
+  gap: 4px;
+}
+.packing-actions button {
+  background: transparent;
+  border-color: transparent;
+  font-size: 12px;
+  padding-inline: 6px;
+}
+.packing-bag {
+  margin-left: auto;
+}

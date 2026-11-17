@@ -107,10 +107,19 @@ function account() {
   if (store) {
     modal(
       "個人帳號",
-      "<p>此裝置的預設記帳人：" +
-        esc(localStorage.getItem(key("person")) || "我") +
-        "</p>" +
-        btn("登出", "logout"),
+      inputs(
+        [["person", "此裝置的預設記帳人", ["", ...people.slice(0, 2)], true]],
+        {
+          person: people
+            .slice(0, 2)
+            .includes(localStorage.getItem(key("person")))
+            ? localStorage.getItem(key("person"))
+            : "",
+        },
+      ) + btn("登出", "logout"),
+      async (form) => {
+        localStorage.setItem(key("person"), String(form.get("person")));
+      },
     );
     return;
   }
@@ -688,6 +697,23 @@ function stats(rs) {
         "</div>"
     : "";
 }
+function packingList(items) {
+  const groups = [
+    ...new Set([...people, ...items.map((r) => r.data.person || "未指定")]),
+  ];
+  return (
+    groups
+      .map((person) => {
+        const group = items.filter(
+          (r) => (r.data.person || "未指定") === person,
+        );
+        if (!group.length) return "";
+        const count = group.filter((r) => r.data.done).length;
+        return `<section class="card packing-group"><div class="packing-heading"><h3>${esc(person === "我" ? "我（舊稱呼）" : person)}</h3><small>${count} / ${group.length}</small></div>${group.map((r) => `<div class="packing-item"><label class="packing-check"><input type="checkbox" data-packing="${esc(r.id)}" ${r.data.done ? "checked" : ""}><span><strong>${esc(r.data.name)}</strong>${r.data.notes ? `<small>${esc(r.data.notes)}</small>` : ""}</span></label><small class="packing-bag">${esc([r.data.bag, r.data.category].filter(Boolean).join(" · "))}</small>${filter.editPacking ? '<div class="packing-actions">' + controls(r) + "</div>" : ""}</div>`).join("")}</section>`;
+      })
+      .join("") || empty
+  );
+}
 function list() {
   const source = live(view);
   let result = source,
@@ -701,9 +727,10 @@ function list() {
     if (filter[k]) result = result.filter((r) => r.data[k] === filter[k]);
   };
   if (view === "packing_items") {
-    dropdown("person", "全部", people);
+    dropdown("person", "全部", [...new Set([...people, ...choices("person")])]);
     dropdown("bag", "全部行李類型", ["隨身", "托運"]);
-    tools += btn("複製前趟項目", "copy");
+    tools += btn(filter.editPacking ? "完成編輯" : "編輯清單", "packingMode");
+    if (filter.editPacking) tools += btn("複製前趟項目", "copy");
     const done = source.filter((r) => r.data.done).length;
     extra =
       '<div class="card"><p>已打包 ' +
@@ -753,6 +780,10 @@ function list() {
       "</p></div>" +
       stats(result);
   }
+  if (view === "packing_items")
+    return (
+      '<div class="tools">' + tools + "</div>" + extra + packingList(result)
+    );
   return (
     '<div class="tools">' +
     tools +
@@ -938,7 +969,13 @@ function editor(table, r = null, initial = {}, mode = "") {
         : "",
     qty: 1,
     rate: tripData.rate,
-    person: localStorage.getItem(key("person")) || "我",
+    person:
+      table === "expenses" &&
+      people.slice(0, 2).includes(localStorage.getItem(key("person")))
+        ? localStorage.getItem(key("person"))
+        : table === "packing_items"
+          ? filter.person || ""
+          : "",
     timezone: "Asia/Seoul",
     currency,
     ...r?.data,
@@ -1128,6 +1165,11 @@ async function action(a, id) {
     return;
   }
   if (a === "addDay") return editor("itinerary_items", null, { date: id });
+  if (a === "packingMode") {
+    filter.editPacking = !filter.editPacking;
+    render();
+    return;
+  }
   if (a === "retry") return store.sync();
   if (a === "add" || a === "newTrip" || a === "expense")
     return editor(
@@ -1305,6 +1347,19 @@ document.addEventListener("click", (e) => {
     );
 });
 document.addEventListener("change", (e) => {
+  if (e.target.dataset.packing) {
+    const input = e.target;
+    input.disabled = true;
+    action("toggle", input.dataset.packing)
+      .catch((err) => {
+        input.checked = !input.checked;
+        message(err.message);
+      })
+      .finally(() => {
+        input.disabled = false;
+      });
+    return;
+  }
   if (e.target.dataset.task) {
     const input = e.target;
     input.disabled = true;
