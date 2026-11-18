@@ -430,7 +430,7 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
     await nav(a, "行李");
     await click(a, "新增行李");
     await fill(a, "name", "雨傘");
-    await a.locator('dialog [name="person"]').selectOption("阿庭");
+    await a.locator('dialog [name="packingPerson"][value="阿庭"]').check();
     await a.locator('dialog [name="bag"]').selectOption("托運行李");
     await fill(a, "notes", "折疊款");
     await save(a);
@@ -442,7 +442,7 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
     await expect(a.locator('dialog [name="bag"]')).toHaveValue("托運行李");
     await expect(a.locator('dialog [name="notes"]')).toHaveValue("折疊款");
     await fill(a, "name", "備用雨傘");
-    await a.locator('dialog [name="person"]').selectOption("阿庭");
+    await a.locator('dialog [name="packingPerson"][value="阿庭"]').check();
     await save(a);
     await expect(
       a.getByRole("checkbox", { name: "備用雨傘" }),
@@ -582,6 +582,36 @@ test("two mobile profiles: isolated trips, move/undo, fixed totals, offline queu
     await expect(
       a.getByRole("checkbox", { name: "雨傘 折疊款", exact: true }),
     ).not.toBeChecked();
+    await click(a, "新增行李");
+    await fill(a, "name", "衣服");
+    await click(a, "全選四人");
+    await expect(
+      a.locator('dialog [name="packingPerson"]:checked'),
+    ).toHaveCount(4);
+    await expect(
+      a.locator('dialog [name="packingPerson"][value="共用"]'),
+    ).not.toBeChecked();
+    await save(a);
+    await expect(
+      a.getByRole("checkbox", { name: "衣服", exact: true }),
+    ).toHaveCount(4);
+    await a
+      .getByRole("checkbox", { name: "衣服", exact: true })
+      .first()
+      .check();
+    await expect(
+      a
+        .locator(".packing-item")
+        .filter({ hasText: "衣服" })
+        .locator("input:checked"),
+    ).toHaveCount(1);
+    await click(a, "新增行李");
+    await fill(a, "name", "共用充電器");
+    await a.locator('dialog [name="packingPerson"][value="共用"]').check();
+    await save(a);
+    await expect(
+      a.getByRole("checkbox", { name: "共用充電器", exact: true }),
+    ).toHaveCount(1);
     await a.goto(origin + "/Busan-2026/");
     await expect(a.locator("table.itinTable")).toHaveCount(5);
   } finally {
