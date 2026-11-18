@@ -1007,7 +1007,13 @@ function editor(table, r = null, initial = {}, mode = "") {
   };
   if (table === "packing_items")
     values.bag = packingBag(values.bag || "隨身行李");
+  const multiplePeople = table === "packing_items" && !r;
+  const savedPeople = new Set();
   let defs = fields(table, currency);
+  if (multiplePeople) defs = defs.filter(([k]) => k !== "person");
+  const personChoices = multiplePeople
+    ? `<fieldset class="packing-people"><legend>人員（可複選）</legend><button type="button" data-act="allPackingPeople">全選四人</button><div>${people.map((person) => `<label><input type="checkbox" name="packingPerson" value="${esc(person)}" ${values.person === person ? "checked" : ""}>${esc(person)}</label>`).join("")}</div></fieldset>`
+    : "";
   if (table === "trips" && r?.data.transport)
     defs.push(["transport", "交通摘要（原有資料）"]);
   if (mode === "move")
@@ -1027,7 +1033,7 @@ function editor(table, r = null, initial = {}, mode = "") {
         : r
           ? "編輯"
           : "新增") + labels[table],
-    inputs(defs, values) + photos,
+    inputs(defs, values) + personChoices + photos,
     async (f) => {
       const d = { ...r?.data, ...initial };
       for (const [k] of defs) d[k] = String(f.get(k) || "").trim();
@@ -1067,6 +1073,18 @@ function editor(table, r = null, initial = {}, mode = "") {
           throw Error("請選擇旅程內日期");
         if (d.endTime && d.endTime <= d.time)
           throw Error("結束時間必須晚於開始時間");
+      }
+      if (multiplePeople) {
+        const selected = [...new Set(f.getAll("packingPerson"))].filter(
+          (person) => people.includes(person),
+        );
+        if (!selected.length) throw Error("請至少選擇一位人員或共用");
+        for (const person of selected) {
+          if (savedPeople.has(person)) continue;
+          await store.save(table, uid(), target, { ...d, person, done: false });
+          savedPeople.add(person);
+        }
+        return;
       }
       const conflict =
         table === "itinerary_items" &&
@@ -1197,6 +1215,12 @@ async function action(a, id) {
     return;
   }
   if (a === "addDay") return editor("itinerary_items", null, { date: id });
+  if (a === "allPackingPeople") {
+    dlg.querySelectorAll('[name="packingPerson"]').forEach((input) => {
+      if (input.value !== "共用") input.checked = true;
+    });
+    return;
+  }
   if (a === "packingMode") {
     filter.editPacking = !filter.editPacking;
     render();

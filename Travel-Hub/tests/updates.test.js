@@ -16,7 +16,7 @@ test("new service worker waits for consent and preserves active edits", async ()
     if (req.url === "/sw.js" || req.url === "/updates.js") {
       res.setHeader("Content-Type", "text/javascript");
       res.end(
-        req.url === "/sw.js" ? sw.replace("v1-31", `test-${version}`) : updates,
+        req.url === "/sw.js" ? sw.replace("v1-32", `test-${version}`) : updates,
       );
     } else {
       res.setHeader("Content-Type", "text/html");
